@@ -1,0 +1,10 @@
+ssh-keygen -t rsa
+ssh-copy-id msis@172.16.51.59
+ssh msis@172.16.51.59 "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+sudo nano /etc/ssh/sshd_config
+
+PasswordAuthentication no
+
+sudo systemctl restart sshd
+ssh msis@172.16.51.59
+
