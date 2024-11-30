@@ -1,0 +1,117 @@
+aws region -geo loc where aws has setup their infra
+aws has 33 regions
+ 
+hierarchy of region
+region>availability zone>data centres(max 3)
+
+regions are isolated i.e not replicated, causes fault toleration, resilience, redundancy
+
+multiAZ the availabilty zone sould have multiple copies across multiple AZ, so data is not lost when calamities take place
+
+a user can specify a region or AZ for the data not the data centre
+
+region constraints:
+governance
+proximity
+service availability
+price
+
+odm - original device mfg-er
+networking devices from multiple odms are procured to limit hacking of specific data
+
+point of presence:
+cdn- content delivary n/w
+from origin server origin data is pushed across multiple loc or edge location using cdn, so streaming is fast
+we are being diverted to the nearest data centre where this data is cached
+cloudfront uses this to distribute across the world
+route53 uses to send the nearest edge loc ---it is a dns
+service to check whether this edge loc are heatlthy or not, point of presence is used here
+aws has setup PoP around 70 across the globe
+less freq accessed data is moved to regional edge cache
+the freq accessed data is moved to edge loc
+
+aws infrastructure features:
+elasticity & scalability
+fault tolerance
+high availability
+
+aws service category:
+storage service category:
+Amazon S3 - simple storage for basic needs
+Amazon EBS - virtual storage
+Amazon EFS - share date aaross multiple servers
+Amazon S3Glacier - lowest durable storage for long term storage
+
+compute service category
+Amazon EC2
+Amazon EKS
+Amazon ECS
+aws Lambda
+aws elastic beanstalk
+
+
+
+
+---------------------------------------------------------
+https://awsacademy.instructure.com/courses/88932?invitation=TV2fzse8O1HPiGMT0xg2taRV0iR2F5cIY4Rbobvc
+module>
+Launch AWS Academy Learner Lab>
+start lab>
+once light turns green, click it
+preference>
+click on show ......
+search s3>
+s3>
+create bucket>
+bucketname> msiscafe.com ////name should be unique globally
+block public> uncheck all and acknowledge
+////add tag> key -> name value -> msiscafe
+create>
+view details>
+///////s3 bucket is used to host static website, streaming website etc where there is no much user involvement
+clone git source code -----https://github.com/sreepathysois/cafe-static-website.git
+objects>
+add folder>add all the folder
+upload>
+bucket>
+click on link>
+properties>
+static website hosting> enable>host
+specify index
+save>
+bucket>
+objects>
+select all>
+actions>
+make public>--here acl is disabled, to enable that,
+bucket>
+permissions>
+object ownership>
+edit>
+enable acl>
+save>
+objects>
+select all>
+actions>
+enable mke public>
+properties>
+static website hosting>
+open url ---done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

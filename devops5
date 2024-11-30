@@ -1,0 +1,259 @@
+172.16.51.41:8000/nodejs_latest_package_install.txt
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+
+#########Git Repositories################
+
+Java Jsp Web App: https://github.com/sreepathysois/java-jsp-maven-webapp-ci-cd.git
+
+Nodejs Monitoring: https://github.com/sreepathysois/nodejs-monitoring-demoapp.git
+
+Python Moniroting App:  https://github.com/sreepathysois/python-demoapp-monitoring.git
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+github.com/sreepathysois/java-jsp-maven-webapp-ci-cd
+
+maven build utilitoes are identified by pom.xml
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////tomcat/////////////javaApp///////////////////////////////////////////////////////////////////////
+-------------------jenkins
+dashboard>
+new item>
+jsp_compile
+freestyle_prj>
+save>
+config>
+git>
+URL>
+https://github.com/sreepathysois/java-jsp-maven-webapp-ci-cd.git
+branch>
+*/main
+build steps>
+invoke maven>
+mymaven
+goals>
+clean validate compile
+save>
+build>
+////////////////all the class files are saved in the target folder, .jar
+
+dashbaord>
+new item>
+jsp_code_review
+copy from>
+jsp_compile
+build steps>
+goal> 
+-P metrics pmd:pmd checkstyle:checkstyle findbugs:findbugs
+post_build>
+Record compiler warnings and static analysis results> 
+add tools>
+pmd>
+add tools>
+checkstyle>
+add tools>
+findbugs>
+save>
+build>
+
+dashbaord>
+new item>
+jsp_code_deploy
+copy from>
+jsp_compile
+build steps>
+goal> 
+package
+save>
+build>
+
+-------------------------------terminal
+$ sudo apt-get update
+$ sudo apt-get install tomcat9 tomcat9-admin
+$ sudo systemctl status tomcat9
+$ sudo nano /etc/tomcat9/server.xml
+	<Connector port="8000" protocol="HTTP/1.1"
+               address="172.16.51.21"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+////////////////intendation s important
+
+$ sudo systemct restart tomcat9
+$ sudo nano /etc/tomcat9/tomcat-users.xml 
+	<user username="jenkins" password="Tomcat@123" roles="manager-script"/>
+	
+----------------------------------browser
+<ip address, 172.16.51.21>:8000
+manager webapp>
+username>
+jenkins
+password>
+Tomcat@123
+
+----------------------------------jenkins
+dashboard
+manage jenkins>
+plugins>
+deploy to container>
+install without restart>
+
+manage jenkins>
+credentials>
+system>
+global credentials>
+username>
+jenkins
+password>
+tomcat@123
+id>
+tomcatcerd_last two digit of slave ip address
+description>
+tomcatcerd_last two digit of slave ip address
+create>
+
+dashboard>
+jsp_package_deploy>
+configure>
+post-buid action>
+deploy war/ear to a container>
+war/ear files>
+**/*.war ------//all path/all files.jar
+context path>
+JavaApp
+add container>
+tomcat9.x>
+jenkins/*********(tomcatcerd_last two digit of slave ip address)
+tomcat url>
+http://<slave ip address>:8000
+save>
+build>
+
+--------------------------browser
+<ip address of master>:8000/JavaApp
+
+/////////////////////////////////////////////////////////////tomcat//////////////javaApp///////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////nodeJs/////////////////////////////////////////////////////////////
+***master
+dashboard>
+manage jenkins>
+security>
+agents> --------//disbale agent by default
+fixed>
+9000
+save>
+
+***slave
+create a directory
+$ mkdir /home/msis/jenkins
+
+***master
+//create a permanent node agent
+manage jenkins>
+nodes>
+new node>
+node name>
+ubuntu_<last two digit of slave ip address>
+type>
+permenent agent>
+create>
+remote root dir>
+/home/msis/jenkins
+save> 	
+---------//not connected
+click on console>
+
+***slave
+-------//copy the ip address of master to slave and then copy the below commands
+-------//the jar file is found in the target folder, i.e /home/msis/jenkins
+$ sudo curl -sO http://172.16.51.21:8080/jnlpJars/agent.jar
+$ sudo java -jar agent.jar -url http://<master ip>:8080/ -secret xxxxxxxxxx -name "Ubuntu_xx" -workDir "/home/msis/jenkins"
+-------//the slave agent is connected to the master
+
+***master
+dashboard>
+new project>
+enter the item>
+nodejs_monitoringApp_deploy
+free style project>
+restrict where the project can be run
+Ubuntu_<slave last 2 ip digits>
+git>
+https://github.com/sreepathysois/nodejs-monitoring-demoapp.git
+build steps>
+execute shell>
+command>
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+sudo make lint
+sudo make lint-fix
+sudo make test
+sudo make test-report
+sudo make run -----//runs infinitely
+save>
+build>
+
+--browser
+<slave ip >:3000
+
+--jenkins
+stop the build
+
+----//this runs indefenitely, it is present in the foreground, to push it to the background, we use this
+
+
+
+***master
+dashboard>
+configure>
+execute shell>
+command>
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs 
+sudo make lint
+sudo make lint-fix
+sudo make test
+sudo make test-report
+sudo npm install -g pm2
+sudo pm2 start server.mjs
+save>
+build>
+
+
+------//check the console for the port number, itll be 3000
+
+------------------------browser
+http://<master ip>:3000/
+
+//////////////////////////////////////////////////////////////////////////nodeJs/////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////python/////////////////////////////////////////////////////////////
+dashboard>
+new item>
+python_monitoringapp_deploy
+freestyle_prj>
+save>
+config>
+restrict where the project can be run
+Ubuntu_<slave last 2 ip digits>
+git>
+URL>
+https://github.com/sreepathysois/python-demoapp-monitoring.git
+build steps>
+exe shell>
+command>
+sudo apt-get install python3-pip python3.10-venv -y
+sudo make lint
+sudo make lint-fix
+sudo make test
+sudo make test-report
+sudo make run
+save>
+build>
+
+
+
+
+chmod +x 
+./Deploy/shell_script.sh

@@ -1,0 +1,443 @@
+DevOps
+https://www.atlassian.com/
+
+Software Version Control
+-Github & git
+
+version control
+
+
+github
+
++
+repo name -----bankapplication
+initialise with readme file
+add .gitignore files for git to not track some dummy files, secret files etc --------- these files are not pushed to the central repo
+
+sha1 md4 cryptography algo -160 digit hexa is created, 40 is diplayed
+
+local working copy is to be created to connect ot github
+open terminal
+
+https://github.com/megharajnaik/bankapplication.git
+
+$ 		
+$ cd bankapplication/
+$ ls
+$ ls -a
+$ sudo git init
+$ ls -a
+$ sudo git remote add origin "https://github.com/megharajnaik/bankapplication.git"   ---------------- git is a tool
+
+origin
+upstream
+remote
+central
+fork  --- creates one more repo in public repo
+clone
+main & master is to save your final quality product
+
+$ ls -a
+$ sudo git pull origin main ---------------- origin is git link, main is branch
+$ sudo git remote -v
+$ sudo git branch ------ shows current branch, in local repo master branch shows
+$ sudo git checkout main --- creates a branch main 
+$ sudo git branch -a
+$ ls
+
+
+$ sudo git  log
+$ sudo git status
+
+
+$ sudo touch home.php
+$ ls
+$ sudo git status
+
+
+$ sudo cat >home.php 
+permision denied.....why given below
+
+$ sudo ls -l
+total 4
+-rw-r--r-- 1 root root  0 Aug  5 11:57 home.php
+-rw-r--r-- 1 root root 17 Aug  5 11:50 README.md
+
+ownership of file is to be changed to msis
+so that write command can work
+to change th ownership:
+
+$ sudo chown -R msis:msis home.php
+
+the permission is changed from root to msis
+
+$ ls -l
+total 4
+-rw-r--r-- 1 msis msis  0 Aug  5 11:57 home.php
+-rw-r--r-- 1 root root 17 Aug  5 11:50 README.md
+
+$ sudo cat >home.php 
+welcome to banking app           
+^C ---------to exit
+
+$ sudo cat home.php 
+welcome to banking app
+
+$ sudo git add home.php
+$ sudo git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   home.php
+
+
+$ sudo cat >home.php 
+hello banking^C
+$ sudo git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   home.php
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   home.php
+--- the changes are tracked
+
+$ sudo git config --global user.email "megharaj.mails@gmail.com"
+$ sudo git commit home.php -m "added homepage"
+or
+$ sudo git commit -a -m "added homepage"
+[main c8293e8] added homepage
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 home.php
+
+
+
+$ sudo git log
+commit c8293e84f1f34b565f735b7700cb897cbef65064 (HEAD -> main)
+Author: root <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 12:11:08 2024 +0530
+
+    added homepage
+
+commit 85d675816032fbfe2aa0975e2a9b70dec38b4615 (origin/main, master)
+Author: megharajnaik <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 11:39:26 2024 +0530
+
+    Initial commit
+
+
+$ sudo git cat-file -p c8293e84f1f34b565f735b7700cb897cbef65064  ----------commit hexa code is pasted
+tree 09ddeb164cb432bf53e3ae108fce121faeb8b2a1
+parent 85d675816032fbfe2aa0975e2a9b70dec38b4615
+author root <megharaj.mails@gmail.com> 1722840068 +0530
+committer root <megharaj.mails@gmail.com> 1722840068 +0530
+
+added homepage
+
+
+
+$ sudo git cat-file -p 09ddeb164cb432bf53e3ae108fce121faeb8b2a1  ----------------- tree hexa is pasted
+100644 blob 433a7c403efba9c2770ed7b1f62b06a2f14a0897	README.md
+100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391	home.php
+
+
+$ ls
+home.php  README.md
+
+
+$ sudo git cat-file -p e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+$ cd .git
+
+$ sudo git log
+commit c8293e84f1f34b565f735b7700cb897cbef65064 (HEAD -> main)
+Author: root <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 12:11:08 2024 +0530
+
+    added homepage
+
+commit 85d675816032fbfe2aa0975e2a9b70dec38b4615 (origin/main, master)
+Author: megharajnaik <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 11:39:26 2024 +0530
+
+    Initial commit
+
+
+$ cd objects/
+$ ls
+09  43  64  85  bb  c8  e6  info  pack
+$ cd 09/
+$ ls
+ddeb164cb432bf53e3ae108fce121faeb8b2a1
+
+///////////////////$ usermod -aG $USER docker
+
+$ cd bankapplication
+$ sudo git status
+$ sudo git branch
+
+
+$ sudo git push origin main-------------to push to git
+
+Username for 'https://github.com': megharajnaik
+Password for 'https://megharajnaik@github.com': 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xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------github repo>profile>settings>developer settings>personal access token>tokens>gen new token>classic>exp date 90 days> check all>generate
+
+$ sudo touch about.php contact.php
+$ ls -l
+total 4
+-rw-r--r-- 1 root root  0 Aug  5 14:15 about.php
+-rw-r--r-- 1 root root  0 Aug  5 14:15 contact.php
+-rw-r--r-- 1 msis msis  0 Aug  5 12:05 home.php
+-rw-r--r-- 1 root root 17 Aug  5 11:50 README.md
+
+$ sudo chown -R msis:msis about.php contact.php 
+$ ls -l
+total 4
+-rw-r--r-- 1 msis msis  0 Aug  5 14:15 about.php
+-rw-r--r-- 1 msis msis  0 Aug  5 14:15 contact.php
+-rw-r--r-- 1 msis msis  0 Aug  5 12:05 home.php
+-rw-r--r-- 1 root root 17 Aug  5 11:50 README.md
+
+$ sudo cat >about.php 
+this is a banking app
+^C
+$ sudo cat >contact.php 
+contact me at zxc@sdf.com
+^C
+
+
+$ sudo git add -A    -------------caps for adding
+$ sudo git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   about.php
+	new file:   contact.php
+
+
+$ sudo git commit -a -m "added about and contact page" -------------------small a for committing
+[main 2c4642e] added about and contact page
+ 2 files changed, 2 insertions(+)
+ create mode 100644 about.php
+ create mode 100644 contact.php
+
+
+$ sudo git log
+commit 2c4642e28e421dcf780d142754a27de124f01af9 (HEAD -> main)  ---check sum is 2c af9
+Author: root <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 14:21:34 2024 +0530
+
+    added about and contact page
+
+commit c8293e84f1f34b565f735b7700cb897cbef65064 (origin/main)
+Author: root <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 12:11:08 2024 +0530
+
+    added homepage
+
+commit 85d675816032fbfe2aa0975e2a9b70dec38b4615 (master)
+Author: megharajnaik <megharaj.mails@gmail.com>
+Date:   Mon Aug 5 11:39:26 2024 +0530
+
+    Initial commit
+
+
+$ sudo git cat-file -p 2c4642e28e421dcf780d142754a27de124f01af9
+tree 0d5d7930c146d2b398278bdabe4e51293c3d4028
+parent c8293e84f1f34b565f735b7700cb897cbef65064
+author root <megharaj.mails@gmail.com> 1722847894 +0530
+committer root <megharaj.mails@gmail.com> 1722847894 +0530
+
+added about and contact page
+
+
+$ sudo git cat-file -p 0d5d7930c146d2b398278bdabe4e51293c3d4028
+100644 blob 433a7c403efba9c2770ed7b1f62b06a2f14a0897	README.md
+100644 blob a902bd2a323a2833a1c5a0f46a2633e83fbb367a	about.php
+100644 blob e52ff33a1dbfe8757fc3c701da2344a8b0be57cf	contact.php
+100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391	home.php
+
+
+
+///////commit obj is created based on content,email, name,timestamp, date
+///////tree obj is created based on content of all blob
+
+
+$ sudo git push origin main
+Username for 'https://github.com': megharajnaik
+Password for 'https://megharajnaik@github.com': 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xxxxxxxxxxxxxxxxxxxxx
+
+
+------------------------------------------commit done-------------------------------------------------------------------------
+///branches helps you create new features
+creates isolation
+non- linearlity
+modular development
+paralle development
+
+$ sudo git branch
+* main         ----head is pointing here
+  master
+
+$ sudo git branch trans
+$ sudo git branch 
+* main
+  master
+  trans
+  
+$ sudo git checkout trans             ---------------  $ sudo git checkout -b trans can also be done , it adds new branch
+Switched to branch 'trans'
+
+$ sudo git branch 
+  main
+  master
+* trans
+
+
+$ ls
+about.php  contact.php  home.php  README.md
+
+$ sudo touch trans.php
+$ sudo chown -R msis:msis trans.php 
+$ sudo cat >trans.php 
+this is to chek the transactions
+^C
+
+$ sudo git add -A
+$ sudo git status
+On branch trans
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   trans.php
+
+
+$ sudo git commit -a -m "added trans page from trans branch"
+[trans ec7d324] added trans page from trans branch
+ 1 file changed, 1 insertion(+)
+ create mode 100644 trans.php
+$ ls
+about.php  contact.php  home.php  README.md  trans.php
+
+$ sudo git branch 
+  main
+  master
+* trans
+
+////we will switch to main branch to chek for isolation
+
+$ sudo git branch 
+* main
+  master
+  trans
+$ ls
+about.php  contact.php  home.php  README.md     --------------trans file is not there, so isolation
+
+///////////////if you want ot merge branch a and b, we need to be in dest branch, and then merge
+
+$ sudo git merge trans
+$ ls
+about.php  contact.php  home.php  README.md  trans.php ----- merging done
+
+///stash feature implementation
+$ sudo git checkout trans 
+Switched to branch 'trans'
+$ ls
+about.php  contact.php  home.php  README.md  trans.php
+$ sudo touch imps.php
+$ sudo chown -R msis:msis imps.php
+$ sudo cat >imps.php
+this is doing transaction
+^C
+
+$ sudo git checkout main
+Switched to branch 'main'
+$ ls
+about.php  contact.php  home.php  imps.php  README.md  trans.php  --------------imps can be seen by other branch and could be lost or modifid by others
+
+$ sudo git checkout trans
+Switched to branch 'trans'
+$ ls
+about.php  contact.php  home.php  imps.php  README.md  trans.php
+
+$ sudo git add -A
+$ sudo git stash
+Saved working directory and index state WIP on trans: ec7d324 added trans page from trans branch
+
+$ sudo git checkout main
+Switched to branch 'main'
+$ ls
+about.php  contact.php  home.php  README.md  trans.php     -----------------imps is not seen here, this feture can be used this way, this doesnt commit to git
+
+$ sudo git checkout trans
+Switched to branch 'trans'
+$ sudo git stash apply 
+On branch trans
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   imps.php
+
+$ sudo git commit -a -m "imps page is added for quick transaction"
+[trans 8d7f49a] imps page is added for quick transaction
+ 1 file changed, 1 insertion(+)
+ create mode 100644 imps.php
+$ ls
+about.php  contact.php  home.php  imps.php  README.md  trans.php
+
+///////////////in our git repo the trans file is not visible, so we do this
+in github the branch is changed to trans
+in main the trans branch isnt there
+
+$ sudo git push origin trans
+
+
+-----------------------------------------branching done-----------------------------------------------------------------------
+
+to do:
+revert
+rebase
+
+tags
+packages
+ssh
+cli
+
+
+git features:
+distributed
+compatible 
+non-linear -tree struct
+branching
+lightweight -lossless compression
+speed -made using c, 1 order magnitude faster as it is conected to hdd than network 
+open sorce
+reliable
+secure -sha1 crypto algo is used
+economical
+
+
+/////////////////////////////////////////////
+steps:
+public cntral repo
+add readme file
+create local working dire
+init as local working repo
+provide url
+check main branch main
+checkout cmd -- create a new branch or access existing branch
+check main branh, pub repo has main branch
+add homepage
+added  file to to sudo git
+it tels when new file is added
+commit to local repo using git commit
+error pops, so user email needs to be added-sudo got config --global user.email "<email-id>"
+
+evertying is stored in tree structure
+stored in .git folder 

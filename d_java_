@@ -1,0 +1,47 @@
+java compile
+
+>incoke top lvl maven
+clean validate compile
+
+
+
+java code review
+
+-P  metrics pmd:pmd findbugs:findbugs checkstyle:checkstyle
+
+> record compiler warnings and analysis report
+
+
+
+java test
+
+test
+
+>publish html reports
+
+target/
+
+index.html
+
+*.xml
+
+HTML Report
+
+
+>publish junit test
+
+target/surefire-reports/*.xml
+
+
+
+
+java deploy
+
+package
+
+
+
+
+
+cd target
+java -jar *.jar

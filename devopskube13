@@ -1,0 +1,44 @@
+config maps are used to decouple configurations in an application
+
+***master
+$ kubectl get nodes
+$ sudo git clone <cafe dynamic website>
+$ ls
+//order of exec  --  pv -> 
+$ kubectl apply -f mysql_pv.yaml
+$ kubectl get pv
+$ kubectl apply -f mysql_pvc.yaml
+$ kubectl get pvc
+//$ kubectl apply -f <password file>
+$ kuectl get secrets
+$ kubectl apply -f mysql.yaml
+$ kubectl get describe secrets mysql-pass
+$ kubectl apply -f cafe_app_db_deployments.yaml
+$ kubectl deployments
+$ kubectl get pods
+$ kubectl apply -f cafe_app_db_service.yaml
+$ kubectl get pvc
+$ kubectl apply -f cafe_app_config_map.yaml
+$ kubectl get configmap
+$ kubectl describe configmap app-config     -----app-config is the name of the config
+$ kubectl apply -f cafe_app_web_deployment.yaml
+$ kubectl apply -f cafe_app_web_service.yaml
+$ kubectl get pods
+$ kubectl get svc
+$ kubectl describe pod <name of cafeweb pod>  -----------eg:- cafeweb-xxxxxx-xxxxxx
+copy ip>
+
+--browser
+localhost:ip
+
+$ kubectl get pods
+$ kubectl describe pod <name of mysql pod>  -----------eg:- mysql-xxxxxx-xxxxxx
+copy ip>
+sudo nano cafe_app_config_map.yaml
+change the ip>
+$ kubectl apply -f cafe_app_config_map.yaml
+$ kubectl describe configmap app-config
+$ kubectl rollout restart deployment cafeweb
+
+--browser
+refresh

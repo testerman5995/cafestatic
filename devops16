@@ -1,0 +1,83 @@
+continuous monitoring
+
+-why
+to make infrasctucture proactive
+manual monitoring/traditional monitoring means that the monitoring is reactive, means that the fault is fixed after a problem occurs
+in continuous monitoring the minor problems that could affect the pipeline is known/alerted and handled
+infrascture is optimised
+cost is reduced
+to get insights
+to optimise resources
+to make app secure and conclave
+
+monitoring is to monitor infrastructure
+
+-check manual monitoring vs tarditional monitoring
+
+-continuous monitoring phases
+define
+establish
+implement
+analyze
+respond
+review and update
+
+
+-continuous monitoring tools
+nagios
+aws cloudwatch
+elkstash -- elastic, logstash, kibana
+splunk
+
+
+
+
+nagios
+-check nagios architecture
+
+to monitor remote host, install NRPE
+it executes the plugins for remote server
+
+
+///////////////$ sudo vi ~/.ssh/known_hosts          -------- to check the ssh known hosts
+
+
+
+
+
+setup nagios
+
+
+map> ---shows the servers monitored
+
+
+$ cd /usr/local/nagios/
+$ ls
+$ cd libexec/  -----installed plugins
+//////////////////    /usr/local/nagios/libexec/   
+$ ./check_http -h -----to chek the running, -h is for health
+$ ./check_http -I <ip> -p 8080 -u /manager -a jenkins:Sois@123   --------ip can be 172.16.51.38
+
+
+$ cd ..
+$ ls
+$ cd etc/
+$ ls
+$ cd objects/
+$ ls
+$ nano commands.cfg    -----has the commands
+
+
+	find plugin
+	download plugin
+	path to plugin
+	understand by -h
+	exec path
+	commands.cfg
+	
+	
+$ cd..
+$ ls
+$ cd servers
+$ ls
+$ MyLinuxHost001.cfg

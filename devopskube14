@@ -1,0 +1,65 @@
+***slave/master
+mng jenkins>
+install plugins>
+install kubernetes plugins>
+
+adv sttings>
+select hpi file>               http://172.16.51.41:8000/     hpi file
+deploy>
+
+cred>
+add>
+kind>
+kube>
+id>
+kube_47_21_59
+desc>
+kube_47_21_59
+enter directly>
+
+***master
+$ cat /home/msis/.kube/config  ---use gedit 
+copy the content>
+
+***slave/master
+paste in creds content>
+create>
+
+
+
+--jenkins
+cafe_static_kube_deploy>
+restrict from>
+
+build step>
+kubeconfig>
+select the kube cred>
+config file>
+cafestatic-deployment.yaml, cafestatic-service.yaml
+save>
+
+
+--terminal
+check if cluster is running
+$ kubectl get nodes
+$ kubectl get pods
+$ kubectl delete deployments cafestatic
+$ kubectl get svc
+$ kubectl delete svc cafestatic
+
+
+--jenkins
+build>
+
+
+
+--terminal
+$ kubectl get pods
+$ kubectl get svc
+$ kubectl describe pod cafestatic-xxxxx-xxxxx
+copy ip addr>
+
+
+--browser
+ip>
+

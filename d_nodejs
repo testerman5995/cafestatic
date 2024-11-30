@@ -1,0 +1,20 @@
+nodejs shell
+
+sudo npm install package.json
+sudo npm run start index.js &
+
+
+nodejs docker
+
+ sudo docker build -t neehar2601/nodejsweb:latest .
+ sudo docker push neehar2601/nodejsweb:latest
+ 
+ 
+nodejs docker run
+
+sudo docker run -it -d -p 7020:80 neehar2601/nodejsweb:latest
+ 
+ 
+nodejs kube
+
+>deployto kubernetes

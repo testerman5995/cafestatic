@@ -1,0 +1,134 @@
+http://172.16.51.41:8000/docker-compose-install-links.txt
+
+#########Docker Compose Install##############
+
+mkdir -p ~/.docker/cli-plugins/
+curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+
+chmod +x ~/.docker/cli-plugins/docker-compose
+
+sudo docker-compose --version
+
+###############Links of Docker Compose#############
+
+Cafe Dynamic App: https://github.com/sreepathysois/Cafe_Dynamic_Website.git
+
+Eccommerce App: https://github.com/sreepathysois/phpmysql-app.git
+
+WordpresApp: https://www.linode.com/docs/guides/wordpress-with-docker-compose/
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+https://github.com/sreepathysois/Cafe_Dynamic_Website.git
+
+container 1 - web layer
+container 2 - application layer
+container 3 - database
+
+docker compose--- tool used to start mutiple containers and tie them up together
+
+///////////////lambstack
+
+
+--containerise only web layer
+mompopcafe>dockerfile
+
+--containerise only db layer
+mompopdb>dockerfile
+
+--docker-compose.yml
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+$ mkdir -p ~/.docker/cli-plugins/
+$ curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+$ chmod +x ~/.docker/cli-plugins/docker-compose
+$ sudo docker-compose --version
+$ ls
+$ cd Cafe_Dynamic_Website/
+$ ls
+$ sudo nano docker-compose.yml 
+	 mysql:
+    image: mysql:latest
+    container_name: mysql
+    #command: --default-authentication-plugin=mysql_native_password  -------------comment this
+    environment:
+      MYSQL_ROOT_PASSWORD: Msois@123  
+      MYSQL_DATABASE: mom_pop_db 
+        #MYSQL_USER: root 
+      MYSQL_PASSWORD: Msois@123 
+
+$ sudo docker ps
+	CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+$ sudo docker-compose up --build -d   ----up is to start all container, build is for building it fot the first time
+$ sudo docker ps
+//$ sudo docker-compose down --------down all containers   ///use when error pops or oother prblm, once you use down, use up cmd again
+
+--browser
+<ip>:5000  -not depoyed on host, deployed on container
+
+$ sudo docker exec -it mysql bash
+# ls
+	afs   dev			  home	 media	proc  sbin  tmp
+	bin   docker-entrypoint-initdb.d  lib	 mnt	root  srv   usr
+	boot  etc			  lib64  opt	run   sys   var
+# cd docker-entrypoint-initdb.d/
+# ls
+	create-db.sql
+# mysql -u root -p 
+p/w:Msois@123
+> show databases;
+	+--------------------+
+	| Database           |
+	+--------------------+
+	| information_schema |
+	| mom_pop_db         |
+	| mysql              |
+	| performance_schema |
+	| sys                |
+	+--------------------+
+	5 rows in set (0.03 sec)
+
+> exit
+# cd /var/lib/mysql
+# ls
+# cd mom_pop_db/
+# ls
+	order.ibd  order_item.ibd  product.ibd	product_group.ibd
+# cat order.ibd
+# exit
+$ sudo docker exec -it mompopcafeapp bash
+# ls
+# cat getAppParameters.php
+# exit
+
+
+--jenkins
+$ cd jenkins
+$ ls
+$ sudo java -jar agent.jar -url http://172.16.51.21:8080/ -secret 756089c66487ce27714a46710dcf88042d4ced00dd99346a794398860a854a28 -name "Ubuntu_48_server" -workDir "/home/msis/jenkins"
+
+new>
+cafe_dynamic_docker_compose_deployment
+copy from>
+xx
+restrict from>
+xx
+build step>
+exec shell>
+$ mkdir -p ~/.docker/cli-plugins/
+$ curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+$ chmod +x ~/.docker/cli-plugins/docker-compose
+$ sudo docker-compose --version
+$ sudo docker-compose up --build -d
+build step>
+docker compose>
+docker-compose.yml>  --------give path to .yml folder
+docker compose cmd>
+Start all services
+save>
+build>
+
+
+

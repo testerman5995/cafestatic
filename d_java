@@ -1,0 +1,48 @@
+java compile
+
+clean validate compile
+
+
+java code review
+
+-P metrics pmd:pmd findbugs:findbugs checkstyle:checkstyle
+
+
+java test
+
+test
+
+
+java pkg deploy
+
+package
+
+>pkg deploy
+**/*.war
+
+/javaapp
+
+>tomcat 9x
+>credentials
+login to server 45
+
+http://172.16.51.45:8000
+
+
+java docker
+
+package
+
+>shell
+sudo docker build -t neehar2601/javaapp:v1 .
+sudo docker push neehar2601/javaapp:v1
+
+
+java docker run
+
+sudo docker run -it -d -p 8043:8080 neehar2601/javaapp
+
+
+java kube
+
+> deploy to kube

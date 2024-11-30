@@ -1,0 +1,40 @@
+$ sudo ssh chefserver@<ip>
+
+//checking for working cluster
+$ sudo kubectl get nodes
+//which had control plane is master, which does not it is slave
+
+//get details of all pods running in master
+//$ sudo kubectl get pods --all-namespaces
+$ sudo kubectl get pods -n kube-system
+
+
+//create first deployment of nginx webserver
+$ sudo kubectl create deployment nginx --image=nginx:latest
+	deployment called nginx is created
+///pod is created automatically
+$ sudo kubectl get deployments
+$ sudo kubectl get pods
+$ sudo kubectl expose deployment nginx --type=NodePort --port=80
+//3 types of services: load balancer, cluster ip, node port
+	service is exposed
+
+//get worker port 
+$ sudo kubectl get svc   ---svc is short for services
+	ip is shown
+	
+//access service
+--browser
+<ip>:<port>
+
+------------------------------------------------------------------------------------------------------
+cafe static website
+
+$ sudo kubectl create deployment cafeapp --image=sreedocker123/cafewebimage:final --replicas=2    ---------2 replicas are created
+$ sudo kubectl get pods
+	2 pods are created
+$ sudo kubectl expose deployment cafeapp --type=NodePort --port=80    -----port is 80 as it is deployed using apache
+$ sudo kubectl get svc
+
+--browser
+<ip>:<port>

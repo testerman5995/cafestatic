@@ -1,0 +1,112 @@
+$ sudo systemctl status docker -to check if docker is there or not
+$ sudo apt-get install docker.io -----for installing
+$ sudo docker ps ------ps is for processes
+	CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+$ sudo docker image ls
+	REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
+	ubuntu        latest    6b7dfa7e8fdb   20 months ago   77.8MB
+	hello-world   latest    feb5d9fea6a5   2 years ago     13.3kB
+$ sudo docker pull ubuntu:latest   --------pull base img from public repo  : is for tag
+$ sudo docker image ls
+$ sudo docker run --name myubuntu -it -d ubuntu:latest   ------------ run is to start a container with name myubuntu -d is for it to run in the background and -it is for it to run with the terminal incase of changes to be made later ,with an image ubuntu:latest
+	9785b31094a3bc3f63dd3853abb794d638b4b9f09ec953c6fb45f88ab5412e89  ---------id is given
+$ sudo docker ps
+	CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS          PORTS     NAMES
+	9785b31094a3   ubuntu:latest   "bash"    25 seconds ago   Up 23 seconds             myubuntu
+$ sudo docker exec -it myubuntu bash --------distinguish the container by id i.e myubuntu bash is an emulator 
+////isolated environment is created
+////no using sudo here
+root@9785b31094a3:/# cat /etc/os-release 
+	PRETTY_NAME="Ubuntu 22.04.1 LTS"
+	NAME="Ubuntu"
+	VERSION_ID="22.04"
+	VERSION="22.04.1 LTS (Jammy Jellyfish)"
+	VERSION_CODENAME=jammy
+	ID=ubuntu
+	ID_LIKE=debian
+	HOME_URL="https://www.ubuntu.com/"
+	SUPPORT_URL="https://help.ubuntu.com/"
+	BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+	PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+	UBUNTU_CODENAME=jammy
+root@9785b31094a3:/# apt-get update
+root@9785b31094a3:/# apt-get install apache2 nano 
+root@9785b31094a3:/# cd /var/www/html/
+root@9785b31094a3:/var/www/html# ls
+	index.html
+root@9785b31094a3:/var/www/html# nano index.html  ------exit
+root@9785b31094a3:/var/www/html# rm -rf index.html
+root@9785b31094a3:/var/www/html# nano index.html
+root@9785b31094a3:/var/www/html# service apache2 start   ------runs on port 80
+root@9785b31094a3:/var/www/html# exit
+	exit
+$ sudo docker ps
+	CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS          PORTS     NAMES
+	9785b31094a3   ubuntu:latest   "bash"    16 minutes ago   Up 16 minutes             myubuntu
+$ sudo docker commit 9785b31094a3 msiscafestaticapp:v1   -------------to run a container from running img, should provide the code from before and then provide it a name
+	sha256:c55af0c16f5d9e52012880b7b5cd5d038ddf57f34de8debea9dae000662f5748
+$ sudo docker image ls
+	REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
+	msiscafestaticapp   v1        c55af0c16f5d   20 seconds ago   248MB
+	ubuntu              latest    6b7dfa7e8fdb   20 months ago    77.8MB
+	hello-world         latest    feb5d9fea6a5   2 years ago      13.3kB
+$ sudo docker tag msiscafestaticapp:v1 megharajnaik/msiscafestaticapp:v1   --------------<docker username>/<reponame>:<tag>  ---to give it to operation team, we need to push img to hub, criteria to push img is that we need to tag the img to hub
+$ sudo docker image ls
+	REPOSITORY                       TAG       IMAGE ID       CREATED          SIZE
+	msiscafestaticapp                v1        c55af0c16f5d   19 minutes ago   248MB
+	megharajnaik/msiscafestaticapp   v1        c55af0c16f5d   19 minutes ago   248MB
+	ubuntu                           latest    6b7dfa7e8fdb   20 months ago    77.8MB
+	hello-world                      latest    feb5d9fea6a5   2 years ago      13.3kB
+$ sudo docker login
+	username:
+	password:
+$ sudo docker push megharajnaik/msiscafestaticapp:v1  ---------------<docker username>/<reponame>:<tag> //////eg: sreedocker123/msiscafestaticapp:v1
+
+///////to pull an img: $ sudo docker pull <hub name>/<repo name>:<version>
+$ sudo docker run --name msiscafeapp -it -d -p 4000:80 megharajnaik/msiscafestaticapp:v1  -------<docker username>/<reponame>:<tag>  --------4000:80 is for remapping port 80 since 80 is already being used
+8e4b0f251a69193dc6b1a48ac8037118ee6247c9be9c186b33cf40ef2f889484
+
+---browser
+localhost:4000  -here the html is not diplayed
+
+$ sudo docker exec -it msiscafeapp bash 
+# cd /var/www/html
+# ls
+# cat index.hmtl
+# service apache2 status 
+# service apache2 start
+# exit
+
+---browser
+localhost:4000  -here the html is diplayed
+
+$ ls
+$ cd cafeapp
+$ ls
+	css  Dockerfile  images  index.html  README.md
+$ sudo nano Dockerfile
+	FROM ubuntu:latest  -------------------pull content from registry
+	ARG DEBIAN_FRONTEND=noninteractive	-----------argument set says that this is in non-interactive mode
+	#RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//https:\/\/archive.ubuntu.com\/ubuntu\//g' /etc/apt/sources.list
+	#RUN sed -i 's/http:\/\/archive.ubuntu.com\//http:\/\/us.archive.ubuntu.com\//g' /etc/apt/sources.list
+	RUN apt-get update -y && apt-get install -y apache2  ------------run is to add command on top of another img
+	ADD . /var/www/html/	-----------COPY or ADD is to copy a data,files,code form local file s/m inside an img, to /var/www/html
+	EXPOSE 80	------------expose a port, opens up all trafic and listens to 80
+	ENTRYPOINT apachectl -D FOREGROUND	---------execute a command
+
+$ sudo docker build -t megharajnaik/msiscafeapp:v2 .	----------- . is for building in current folder , -t is to put a name 
+$ sudo docker image ls
+	REPOSITORY                       TAG       IMAGE ID       CREATED          SIZE
+	megharajnaik/msiscafeapp         v2        3a184d4809e7   52 seconds ago   294MB
+	msiscafestaticapp                v1        c55af0c16f5d   46 minutes ago   248MB
+	megharajnaik/msiscafestaticapp   v1        c55af0c16f5d   46 minutes ago   248MB
+	ubuntu                           latest    6b7dfa7e8fdb   20 months ago    77.8MB
+	hello-world                      latest    feb5d9fea6a5   2 years ago      13.3kB
+$ sudo docker run --name msiscafe -it -d -p 4001:80 megharajnaik/msiscafeapp:v2
+	6a8e9ed3fe4c98b532527134136f6174f7e7878f9ddc9b1e62fe82b09660cab1
+
+
+
+
+
+

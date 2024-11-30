@@ -1,0 +1,50 @@
+source repo -> build img -> docker
+
+https://github.com/sreepathysois/nodejs-monitoring-demoapp
+build>
+dockerfile>
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+$ sudo git clone https://github.com/sreepathysois/nodejs-monitoring-demoapp.git
+$ cd nodejs-monitoring-demoapp/
+$ ls
+	build  CONTRIBUTING.md  deploy  LICENSE  makefile  README.md  src
+$ cd src/
+$ ls
+	graph.mjs     package-lock.json  routes      tests  views
+	package.json  public             server.mjs  todo
+$ nano package.json  ---------shows all dependenices
+	///build -----docker file
+	///src ------everthing req to run is here
+
+$ sudo docker build . --file build/Dockerfile -t nodejsdemoapp:v1
+$ nano makefile ------------shows the preset commands for easy use, use make command
+//$ sudo docker inspect nodejsdemoapp:v1
+//$ sudo docker history nodejsdemoapp:v1
+$ sudo docker run --name nodeapp -it -d -p 3007:3000 nodejsdemoapp:v1
+	00f8dc6f2f2cf850883da730e4c2d67f19edbf25b4cac27d825a4e8220e20549
+$ sudo docker ps
+
+--browser
+http://172.16.51.21:3007/	
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+$ sudo git clone https://github.com/sreepathysois/python-demoapp-monitoring.git
+$ cd python-demoapp-monitoring/
+/////pip ----------  used to download req
+/////gunicorn, uwsgi
+$ ls
+	build  CONTRIBUTING.md  deploy  LICENSE  makefile  README.md  src  tests
+$ sudo docker build . --file build/Dockerfile pythondemoapp:v1
+
+	////if error pops up, it may be because it looks at the logged in repo, log out using this command and do the same
+	////$ sudo docker logout
+	
+$ sudo docker run --name pythondemo -it -d -p 5007:5000 pythondemoapp:v1
+	549e78b3f39071962a4357dff12ade675bd0f95ef5e49c913dc842191ac7c708
+
+--browser
+http://172.16.51.21:5007/
+

@@ -1,0 +1,90 @@
+configuration mgmt - ansible
+automation services
+provitioning services
+penaltimate step in devops
+
+managing s/w on top of h/w
+
+provision, config & deploy your application
+
+reasons to upgrade to config mgmt
+1)infrastructure as a code
+2)handling servers was difficult
+baselining - grouping servers 
+3)scaling up was difficult
+4)rolling back was a problem
+
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+$ sudo git clone https://github.com/sreepathysois/AnsibleWorkUpdated
+$ cd AnsibleWorkUpdated
+$ ls
+$ cd ansible-apache/
+$ ls
+$ sudo apt-get install ansible sshpass
+//generate a key pair and copy the public key, needs to be done only for the forst time and not everytime
+$ sudo ssh-keygen -t rsa
+	enter file to save(/root/.ssh/id_rsa): myansible
+	<hit enter twice>
+$ ls
+$ sudo ssh-copy-id -i myansible.pub <hostname>@<ip>   ---eg: msis@172.16.51.45
+$ ls
+$ nano hosts
+//3 details to config s/m - useraname, p/w & ip
+$ nano apache.yml
+
+$ sudo ansible-playbook apache.yml -i hosts -c ssh --ask-pass -K       ---apache.yml is the name of the playbook,    -c ssh is the communication = communication is via ssh, -K is asking for become true user, --ask-pass is for asking the password ////////this is a cmd to run a playbook
+//give password
+
+--browser
+<localhost ip>
+
+
+
+$ cd ..
+$ ls
+$ cd lampansible
+$ ls
+//$ nano /etc/ansible/hosts
+$ sudo nano hosts
+$ sudo nano lamp.yml 
+
+$ sudo ansible-playbook lamp.yml -i hosts -c ssh --ask-pass -K
+
+///4 services
+apt
+service
+copy
+file
+
+$ ls
+$ sudo nano lamp_app.yaml   
+///remove the 7.2 in php
+///change copy path at the end to copy:	src: /home/msis/AnsbleUpdated/lam.............
+$ sudo ansible-playbook lamp_app.yml  ?????????????????????????????????????????????????????????????
+
+
+
+
+////standardise playbook used for other tasks
+////usage of ansible roles to segregate
+
+$ sudo nano hosts
+///for webservers and dbserver add another slave
+///make all the ip as the slave
+
+
+?????????????????????????????????????????????????????????????????
+$ sudo nano playbook.yml
+
+///templates have files that keeps to be changing all time
+$ sudo nano main.yml
+??????????????????????????????????????????????????????????????????
+$ ls
+$ sudo ansible-playbook playbook.yml -i hosts -c ssh --ask-pass -K
+
+

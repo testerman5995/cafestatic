@@ -1,0 +1,230 @@
+http://172.16.51.41:8000/jenkins_install_steps.txt
+
+
+sudo apt-get purge --autoremove jenkins -y
+sudo rm -rf etc/apt/sources.list.d/jenkins.list
+
+sudo wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key |sudo gpg --dearmor -o /usr/share/keyrings/jenkins.gpg
+
+sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+sudo apt-get update
+
+sudo apt-get install jenkins
+
+
+sudo systemctl start jenkins
+
+sudo chown -R msis:msis /var/lib/jenkins/secrets/initialAdminPassword
+
+sudo cat  /var/lib/jenkins/secrets/initialAdminPassword
+
+Go to browser http://localhost:8080 or http://<ip adress>:8080
+
+Submit Password
+
+Install Suggested Plugins
+
+
+Set Username: jenkins
+
+Password: jenkins@123
+
+
+
+---------------------------------------------------------------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+///////removing older version
+
+$ sudo apt-get purge --auto-remove jenkins
+$ sudo rm -rf /etc/apt/sources.list.d/jenkins.list
+
+////////new version
+////wget is used to get files from web
+$ sudo wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key |sudo gpg --dearmor -o /usr/share/keyrings/jenkins.gpg
+$ sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+////////to update the app
+$ sudo apt-get update
+/////////installing uopdated version
+$ sudo apt-get install jenkins
+///////////apt goes to url, downloads deb file for jenkins and hand it over to dpkgmanager, it finds out all the dependencies needed and installs, it is called pre run steps and the steps after is called post run steps. dpkg can also be used instead of apt
+$ sudo systemctl start jenkins
+$ sudo jenkins --version
+$ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+cc479e96f39640f0bcafc2a9600ee154
+////////initial key used to prepare the password
+
+///in firefox
+goto 172.16.51.21:8080 or localhost:8080/
+pw: cc479e96f39640f0bcafc2a9600ee154
+install plugins
+
+////////////$ sudo systemctl restart jenkins  --------input in terminal if necessary
+fil the details and done
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+New Item>
+java_compile
+freestyle>
+ok>
+Source Code Management >
+git>
+https://github.com/sreepathysois/simple-java-maven-app.git
+buid steps>
+invoke maven>
+dashboard>
+mng jenkins>
+tools>
+maven intall>
+mymaven
+save>
+
+build steps>
+mymaven>
+goals>
+clean validate compile
+save>
+build now>
+
+
+new item>
+java_code_review
+copy from>
+java_compile
+goals>
+-P metrics pmd:pmd findbugs:findbugs checkstyle:checkstyle
+///////////////// -P ----invoke maven profile network
+
+post build>
+compiler warnings & stat reports> //////////////////////for this we need to install warnings plugin...(will be listed below from ***) 
+tool>
+select pmd
+tool>
+select findbugs
+tool>
+select checkstyle
+save>
+apply>
+build now>
+
+
+***
+dashboard>
+mng jenkins>
+plugins>
+warnings>
+select and install
+
+
+
+new item>
+java_test
+copy from>
+java_compile
+goals>
+test
+post  build>
+publish junit test result
+///////to add html report post build, got plugins and add html
+post build actions>
+Test report XMLs>
+target/surefire-reports/*.xml
+add>
+html directory to archive>
+target/
+index pages>
+*.xml
+save>
+buildnow>
+
+
+$ cd /var/lib/jenkins/workspace/
+$ ls
+$ cd java-compile/
+$ ls
+$ cd target/
+$ ls --------------packageing of application is not done yet, to deploy to local server, we need to package the java file.
+
+
+
+
+new item>
+java_deploy
+copy from>
+java_compile
+ok>
+goals>
+package
+
+
+
+$ cd../..
+$ ls
+$ cd java-deploy/
+$ ls
+$ cd target/
+$ ls ---------here jar file is inlcuded xxxx.jar    the jre is used to run application anywhere
+$ sudo java -jar xxxx.jar
+
+
+
+plugin>
+available plugins>
+build pipeline plugin>
+install w/o restart>
+
+
+
+
+goto java_deploy >
+to execute a command,
+config>
+add build step>
+execute shell>
+command>
+cd target
+java -jar *.jar
+save>
+build>
+
+
+
+
+dashboard>
++  (on the main screen)>
+name>
+java_ci_cd_pipeline
+build pipeline view>
+Pipeline Flow >
+select initial job>
+add java_compile>
+ok>
+
+
+////////////////step order//////////////////java_compile, java_code_review, java_test, java_deploy	
+
+
+dashboard>
+java_xxxxxx
+config>
+build triggers>
+build after other prj>
+java_xxxxxstep-1, 
+trigger only if build is stable>
+save>
+//////////this step is not to be done for the java_compile as it is first to execute
+
+similarly do to 0ther prj
+
+dashboard>
+java_ci_cd_pipeline>
+//pipeline is shown
+java_compile>
+run>
+refersh>
+//so on for others
+
+
+

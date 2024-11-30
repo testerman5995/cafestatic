@@ -1,0 +1,34 @@
+python code review
+
+sudo apt-get install python3-pip python3.10-venv -y
+sudo make lint
+sudo make lint-fix
+
+
+
+python docker
+
+
+sudo make test
+sudo make test-report
+
+
+
+
+python docker deploy
+
+
+echo "docker@123" | sudo docker login -u bacdocker --password-stdin
+sudo docker build . --file build/Dockerfile -t bacdocker/pythonweb:v1
+sudo docker push bacdocker/pythonweb:v1
+
+
+
+
+
+
+python docekr run
+
+
+sudo docker run -it -d -p 5035:5000 bacdocker/pythonweb:v1
+

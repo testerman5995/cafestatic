@@ -1,0 +1,286 @@
+172.16.51.41:8000/nodejs_latest_package_install.txt
+-----------------------------------------------------------------------------
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+
+#########Git Repositories################
+
+Java Jsp Web App: https://github.com/sreepathysois/java-jsp-maven-webapp-ci-cd.git
+
+
+Nodejs Monitoring: https://github.com/sreepathysois/nodejs-monitoring-demoapp.git
+
+Python Moniroting App:  https://github.com/sreepathysois/python-demoapp-monitoring.git
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+github.com/sreepathysois/java-jsp-maven-webapp-ci-cd
+
+///////////////////maven build utility tool indentified by pom.xml//////////////////////////////////
+
+
+jenkins
+
+dashboard>
+all>
+new>
+jsp_compile
+freestyle project>
+Source Code Management>
+git>
+repository URl
+
+
+*/main
+build steps
+maven version> mymaven
+goal> 
+clean validate compile
+save>
+build>
+
+
+
+///////////////////////////workspace>target file is created/////////////////////////////////////////////////////////////////////////
+
+new>
+jsp_code_review
+copy from Jsp_compile
+build steps>
+goal> -P metrics pmb:pmd checkstyle:checkstyle findbugs:findbugs
+
+////////////////////////////////////////////////////////repeat steps for three tools<pmb checkstyle findbugs>//////////////////////////////////////
+post_build>
+Record compiler warnings and static analysis results> 
+add tools>
+pmb>
+save>
+build>
+
+deploy the 
+
+
+
+new project
+jsp_package_deploy
+copy from 
+jsp_compile
+
+
+
+
+
+build steps>
+goal>
+package
+save>
+build>
+
+
+/////workspace>
+////jsp_package_deploy
+
+
+
+
+
+
+-------------------------------------termainal----------------------------------------------------------------
+
+sudo ssh msis@<ip remote address>
+yes>
+---------------------------------ip a connect to remote machine-------------------------------------------------- 
+sudo apt-get update
+sudo apt-get install tomcat9 tomcat9-admin
+yes>
+
+checks 
+
+sudo systemctl status tomcat9
+
+
+///////////////////////////configuring of tomcat9////////////////////////////////////////////////////////////////////////
+
+sudo nano /etc/tomcat9/server.xml
+
+**************************edit*******************************************************************
+<connector port="8000" protocol=""
+address= "<id address>"
+
+
+sudo systemctl restart tomcat9.service
+
+setup credential 
+
+sudo nano /etc/tomcat9/tomcat-users.xml
+***********************************edit*************************************************************
+/bottom page
+
+<user username="jenkins" password="tomcat@123" roles="manager-script"/>
+////////////<user username="jenkins" password="tomcat@123" roles="manager-gui"/>
+save>
+sudo systemctl restart tomcat9.service
+
+authentication and authorization
+
+---------------------------------------------------browser-------------------------------------------------------
+<ip address>:8000
+
+manager webapp
+username: jenkins
+password: tomcat@123
+
+
+
+////////////////////////////////jenkins///////////////////////////////////////////////////////////////////////////
+
+dashboard
+manage jenkins>
+plugins>
+deploy to container>
+install without restart>
+
+
+manage jenkins>
+credentials>
+system>
+global credentials>
+username>
+jenkins
+
+password>
+tomcat@123
+
+id>
+tomcatcerd_last two digit ip address
+
+create>
+
+
+jsp_package_deploy>
+configure>
+post-buid action>
+deploy war/ear to a container>
+war/ear files>
+**/*.war
+context path>
+JavaApp
+add container>
+tomcat9
+
+tomcat9.x>
+jenkins/*********
+tomcat url>
+http://<ip address>:8000
+save>
+build>
+
+
+
+
+///////////dashboard jsp_package_deploy>condigure>deploy to a com
+
+
+////////////////////////////////////////////////////////////access application///////////////////////////////////////////////////////////////
+browser>
+new tab>
+<ip address>:8000/JavaApp
+
+
+
+----------------------------------------------------seriver and slave--------------------------------------------------
+
+dashboard>
+manage jenkins>
+security>
+agents>
+fixed>
+9000
+save>
+
+manage jenkins>
+nodes>
+new node>
+node name>
+ubuntu_<last two digit of ip address>_server
+type>
+permenent agent>
+create>
+
+
+remote root directory>
+/home/msis/jenkins
+save
+
+
+slave machine 
+root directory n cmd 
+run from agent command line
+
+
+/////////////cmd//////////////
+ls 
+cd jenkins
+sudo curl<copied command>.jar
+ls 
+//agent.jar file created
+sudo java -jar<copied command>
+
+///////////////////////////////source package.json dependances///////////////////////
+
+dashboard>
+new project>
+enter the item>
+nodejs_monitoringApp_deploy
+free style project>
+restrict where the project can be run
+Ubunte_  server
+git>
+git url>
+branch >
+*/master
+build steps>
+execute shell>
+command>
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+save>
+build>
+
+dashboard>
+configure>
+execute shell>
+command>
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+///cd src && sudo 
+sudo make lint
+sudo make lint-fix
+sudo make test
+sudo make test-report
+//sudo make run /////running in infanite loop/////////
+sudo npm install -g pm2
+sudo pm2 start server.mjs
+save>
+build>
+
+-------------------------------------browser--------------------------------
+
+<ip address>:3000
+
+//////test report//////////
+workspace
+test.json
+
+java_test>
+configuration
+
+
+
+
+
+
+
+
+
+

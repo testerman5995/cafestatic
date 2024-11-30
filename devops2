@@ -1,0 +1,114 @@
+cloud service models
+IaaS, PaaS, SaaS   -------------> lvl of control decreases
+each provide diff level of:
+control, flexibility & mgmt
+
+cloud deployment model
+cloud(public), hybrid, on-premise
+
+advantages
+trade CapEx to variable expense
+massive economies of scale
+stop guessing capacity -provides elasticity
+inc speed and agility -------to establish database
+no spending money running and maintaining data centres
+go global in minutes
+(reduce carbon footprint)
+
+jinkins ip address 8080
+
+CI tools
+Jenkins ---------Jenkins provides integration to 1000s plugins
+Travis CI
+Atlassian Bamboo
+Builldbot
+Github Actions
+GitLab CICD Pepeline
+Circle CI
+
+
+
+Jenkins
+jenkins@123
+
+localhost:8080/
+https://github.com/sreepathysois/simple-java-maven-app
+///////////pom.xml --------contains dependencies list, in js -------package.json, python--requirements.txt, microsoft ---solution file
+///////////java build utility --- mavin
+///////////for packaging>>>>>>>web-baser -------ear,var, console-----------jar
+
+------install plugin ---------
+manage jenkins >
+Global Tool Configuration > 
+maven > 
+add maven > 
+name(mymaven_versionname) > 
+check the auto-install > 
+save
+
+ for verification ---- maven -version
+
+-----create new prj
+new item > 
+name(java_compile) > 
+select freestyle prj > 
+ok > 
+Source Code Management > 
+git > 
+https://github.com/sreepathysois/simple-java-maven-app > 
+check if branch is proper > 
+Build Steps > 
+invoke maven targets > 
+maven version > 
+select mymaven > 
+goals > <type this> clean validate compile <///this is not req////test package verify install> > 
+save > 
+workspace > 
+build now > 
+
+terminal
+$ cd /var/lib/jenkins/
+$ ls
+$ cd workspace/
+$ cd java_compile/
+$ ls
+
+-----create nother prj
+new item > 
+name(java_code_review) > 
+copy from----java_compile> 
+build steps > 
+goals > -P  metrics pmd:pmd findbugs:findbugs checkstyle:checkstyle > 
+
+///////////////////////////////////
+Post-build Actions(we need stats option, since it is not there we go to install the plugin, meanwhile we save) > save > Manage Jenkins > Plugin Manager >  available plugins 
+///////////////////not working so we try something else
+
+dashboard>java_code_review>build now> clck on ... on lleft to check console o/p
+
+new item > 
+name(java_test)  > 
+copy from----java_compile> 
+build steps > 
+goals > 
+test > 
+select junit test report > 
+Test report XMLs >
+target/surefire-reports/*.xml > 
+save > 
+build > 
+workspace > 
+taarget > 
+surefire-reports >  	TEST-com.mycompany.app.AppTest.xml > 
+java_test > 
+configure > 
+save > //we need html plugin so we go to install >
+Manage Jenkins > 
+Plugin Manager > 
+available plugins > 
+html publisher
+
+terminal
+$ sudo systemctl restart jenkins
+
+

@@ -1,0 +1,130 @@
+persist the data irrespective of container status, we may lose the container, but we need the data
+
+https://github.com/sreepathysois/docker-volumes-nodejs-app
+
+take base img, node and npm installed
+create working dir
+copy complete src code
+find out th eport and expose
+exe the cmd needed to start node container
+
+
+
+$ sudo git clone https://github.com/sreepathysois/docker-volumes-nodejs-app.git
+$ cd docker-volumes-nodejs-app/
+$ ls
+	Dockerfile  feedback  package.json  pages  public  server.js  temp  ---reviews will be save din feedback, temp folder is where temporary dat awill be saved while user is editing
+
+$ sudo docker build -t cafereview:v1 .
+$ sudo docker run --name cafereview -it -d -p 81:80 cafereview:v1
+$ sudo docker ps
+
+--browser
+<ip addr>:81
+
+//let us go inside a container to see how it works
+$ sudo docker exec -it cafereview bash
+# ls
+# cd feedback
+# ls
+
+--browser
+title>
+cust1
+doc txt>
+customer review
+save>
+
+# ls
+	cust1.txt
+# cat cust1.txt
+# exit
+
+//if due to a bug or accident, our container goes down.... we mimic the situation here
+$ sudo docker rm -f cafereview
+
+//to make this service available to client, we restart
+$ sudo docker run --name cafereview -it -d -p 81:80 cafereview:v1
+$ sudo docker exec -it cafereview bash
+# cd feedback
+# ls
+# exit
+//here the data isnt available, to handle this, we do this
+//we need to provide persistent storage to container, i.e docker volumes
+$ sudo docker rm -f cafereview
+$ sudo docker run --name cafereview -it -d -p 81:80 -v feedback:/app/feedback cafereview:v1   ----------we are adding volumes, -v <vol name>:<complete path>   , mounting /app/feddback inside a container
+$ sudo docker exec -it cafereview bash
+# cd feedback
+# ls
+
+--browser
+create 2 customer data
+save>
+
+# ls
+	cust1.txt cust2.txt
+#exit
+
+// let us again remove conatiner
+$ sudo docker rm -f cafereview
+//relaunching
+$ sudo docker run --name cafereview -it -d -p 81:80 -v feedback:/app/feedback cafereview:v1
+# cd feedback
+# ls
+	cust1.txt cust2.txt    ------here the data is available, presistent storage
+#exit
+	
+//<1>anonymous volume as feedback was created, let us check where it is created
+$ sudo passwd root
+//set p/w
+$ su root
+//enter p/w
+# cd /var/lib/docker/volumes/
+# ls
+	feedback
+# cd feedback
+# ls
+	_data
+# cd _data
+# ls
+	cust1.txt cust2.txt
+# cd
+# cd /var/lib/docker/volumes
+# ls 
+# sudo docker volume create cafevolume
+# ls
+	cafevolume  -----volume is created
+//or # sudo docker volume ls  ---to check the volume creation
+//# sudo docker run --name cafereview1 -it -d -p 82:80 -v cafevolume:/app/feedback cafereview:v1    ------<2>named volumes/docker managed volumes, method 1
+# sudo docker run --name cafereview1 -it -d -p 82:80 --mount src=cafevolume,target=/app/feedback cafereview:v1   ---method 2 of mounting, here there is more control than prev method
+
+<3>bind mounts/host bind mounts, data is shared from host across multiple containers
+# su msis
+$ cd
+$ cd docker-volumes-nodejs-app/
+$ sudo mkdir clientlist/
+$ sudo touch cus1 cus2  ----now it is is in host, we need to mount that 
+$ cd ..
+	$ sudo docker run --name cafereview2 -it -d -p 83:80 -v clientlist:/app/feedback cafereview:v1 ---this will work only if host os and container file s/m matches
+	$ sudo docker exec -it cafereview2 bash
+	# cd feedback/
+	# ls
+	# cd ..
+	# ls  ------not available
+	# exit
+$ sudo docker run --name cafereview2 -it -d -p 83:80 -v ./clientlist:/app/feedback cafereview:v1 --- now do the above steps
+$ sudo docker exec -it cafereview bash
+# cd feedback/
+# ls
+# exit
+
+
+	jenkins>
+	jsp_dicker_run>
+	exec docker cmd>
+	pull image>
+	????
+	build step>
+	exec shell>
+
+

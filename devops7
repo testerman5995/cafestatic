@@ -1,0 +1,92 @@
+build server
+staging server
+
+jsp deploy creates:
+web--- war file
+console--- jar file
+
+----------------------------------------------------------------------------------------------------------------------------------
+http://172.16.51.41:8000/nodejs_latest_package_install.txt
+
+https://github.com/sreepathysois/java-jsp-maven-webapp-ci-cd.git
+
+$ sudo git clone https://github.com/sreepathysois/java-jsp-maven-webapp-ci-cd.git
+//////// $ sudo rm -rf target/
+$ cd java-jsp-maven-webapp-ci-cd/
+$ sudo apt-get install maven
+$ sudo mvn package
+///////$ cd target
+$ sudo ls target/
+	jspapp  maven-archiver  MyLab-0.0.1  MyLab-0.0.1.war
+$ sudo nano Dockerfile
+
+if the docker file is not created, then mkdir Dockerfile
+google the docker for java as we are using java here
+,,in this project, the docker is already specified
+here 8080  is mentioned, so we change it to 8083 from 8080
+
+$ sudo docker build -t javajspdemo:v1 . ( . is important for to copy all the file )
+$ sudo docker run --name javajsp -it -d -p 8083:8080 javajapdemo:v1 
+	045da2065d04270a00593d6c9d1694c8c095a8f7e599d8d3f77b5991f874bbff
+
+/////$ sudo docker rm -f javajsp ---------if error pops , -f is to stop
+
+---browser
+<ip>/MyLab
+
+$ sudo docker stop javajsp    ------or $ sudo docker stop 045d
+$ sudo docker start javajsp -----to start again
+
+
+$ sudo ls target/
+
+--------------------------------------------------------------------------------------------------------------
+login tojenkins>
+new item>
+java_jsp_docker_deploy
+copy from>
+jsp_package_deploy
+retrict>
+Ubuntu 48>
+	//build steps>
+	//exe shell
+	//$ sudo docker build -t sreedocker123/jspmavenapp:v1 .
+	//$ sudo docker push sreedocker123/jspmavenapp:v1
+	//$ sudo docker run -it -d -p 8080:8080 sreedocker123/jspmavenapp:v1
+build steps>
+docker build and publish>
+repo name>
+sreedocker123/jspmavenapp
+tag>
+v1
+registry credentials>
+jenkins cred>
+username>
+sreedocker123
+p/w>
+docker@123
+docker>
+sreedockerhub
+ok>
+save>
+build>
+
+new item>
+java_jsp_docker_run
+copy from>
+java_jsp_docker_deploy
+source code mgmt>
+none>
+restrict>
+Ubuntu_docker>
+build steps>
+delete both>
+//////////////exe docker cmd
+exe shell>
+$ sudo docker run -it -d -p 8084:8080 sreedocker123/jspmavenapp:v1
+save>
+build>
+
+browser>
+ip:8084/Mylab-0.0.1
+

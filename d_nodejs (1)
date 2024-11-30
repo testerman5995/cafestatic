@@ -1,0 +1,43 @@
+nodejs code review
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo dpkg --configure -a
+sudo apt-get install -y nodejs
+sudo make lint
+sudo make lint-fix
+
+
+
+nodejs docker
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+#sudo pm2 stop all
+sudo make test
+sudo make test-report
+
+#cd src
+#sudo pm2 start server.mjs
+
+
+
+
+nodejs docker deploy
+
+> docekr build and publish
+
+
+
+nodejs docker run
+
+sudo docker run -it -d -p 3060:3000 megharajnaik/nodejswebapp
+
+
+
+nodejs kube
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo dpkg --configure -a
+sudo apt-get install -y nodejs
+sudo make lint
+sudo make lint-fix

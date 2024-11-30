@@ -1,0 +1,69 @@
+--java compile
+>invoke top lvl maven target
+clean validate compile
+
+
+
+--java code review
+-P metrics pmd:pmd checkstyle:checkstyle findbugs:findbugs
+
+>post build
+>record compiler warning
+
+
+
+--java deploy
+package 
+
+>post build
+> deploy war/ear
+
+**/*.war
+
+tomcat 9x
+choose cred
+
+tomcat url 
+172.16.51.45:8000
+
+
+
+--java docker
+>docker build and push
+
+sreedocker123/jspmavenapp
+
+v1
+
+>select registry cred for docker
+
+>shell
+sudo docker run -it -d -p 8090:8080 sreedocker123/jspmavenapp:v1
+
+
+-------------
+
+--java docker
+>-execute docekr cmd
+create container
+
+>image name
+sreedocker123/jspmavenapp:v1
+
+> container name
+sreejspappnew
+
+>-execute docker cmd
+pull img
+
+>name
+sreedocker123/jspmavenapp
+
+>tag
+v1
+
+>-execute docker cmd
+start container
+
+>container
+sreejspappnew

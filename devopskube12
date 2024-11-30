@@ -1,0 +1,135 @@
+how to depoy objects in declarative way
+
+//.121
+
+https://github.com/sreepathysois/basic-php-website
+.yaml>  ///manifest file
+
+	deployment can create 3 things:
+	replication set  --responsible for making sure that set no. of replicas are running
+	pods
+	container
+	
+	kube belongs to core group so no objects are mentioned in service.yaml
+	
+	
+//to run this file
+--master
+$ sudo git clone https://github.com/sreepathysois/basic-php-website
+$ cd basic-php-website/
+$ ls
+$ sudo kubectl get nodes
+$ sudo kubectl get pods
+	//no pods
+$ sudo kubectl get deployments
+$ sudo kubeclt apply -f bookalbum_deployment.yaml
+//do not create service before creatinf deployment
+//we create deployment instead of directly creating as we cannot scale w/o deployment
+	deployment.app/bookalbum created
+$ sudo kubectl get all
+$ sudo kubectl get deployment bookalbum -o yaml
+$ sudo kubeclt apply -f bookalbum_service.yaml
+	service/bookalbum created
+$ sudo kubectl get svc
+$ sudo kubectl get pods
+$ sudo kubectl describe pods bookalbum<tab>
+$ sudo kubectl get pods
+$ sudo kubectl get svc
+	copy the ip
+
+--browser
+<ip>:port/index.php
+
+
+
+
+we need to download .hpi file
+//from http://172.16.51.41:8000/
+plugins>
+adv settings>
+add file>
+deploy>
+
+credentials>
+new>
+kind>
+kubernetes credentials>
+//download kubernetes credentials plugin
+
+--master
+$ cat /home/chefserver/.kube/config
+copy>
+
+enter directly>
+paste>
+
+$ sudo kubectl get svc
+
+--browser
+<ip>:port
+
+
+
+https://github.com/sreepathysois/basic-php-website
+deploy>
+kube manifest>
+mysql_pv.yaml>
+//persistent volumes to presist data independent of the life cycle of the container
+mysql_pvc.yaml>
+cafe_app_db_service.yaml>
+cafe_app_config_map.yaml>
+cafe_app_map_deployment.yaml
+
+
+//share data b/w host and user
+
+--slave
+//$ ssh ansible@172.16.51.50  ---ssh to slave
+$ cd /mnt
+$ ls
+
+--master
+$ cd Cafe_Dynamic_Website
+$ cd Deploy
+$ cd Kubernetes_Manifests
+//create persistent voulume
+$ sudo kubectl -f mysql_pv.yaml
+$ sudo kubectl get pv  ---get details about all persistent volumes
+$ sudo kubectl get pvc
+$ sudo kubectl apply -f cafe_app_db_deployment.yaml
+$ sudo kubectl apply -f cafe_app_db_service.yaml
+$ sudo kubectl apply -f cafe_app_config_map.yaml
+$ sudo kubectl apply -f cafe_app_map_deployment.yaml
+$ sudo kubectl apply -f cafe_app_map_service.yaml
+$ sudo kubectl get pods
+
+
+--slave
+$ ls
+	data
+$ cd data
+
+
+--master
+$ sudo kubectl get pods
+$ sudo kubectl describe pods mysql<tab>
+	ip is shown
+--$ sudo kubectl delete -f (//delete all the .yaml files one by one)
+--$ sudo kubectl apply -f (//apply all the .yaml files one by one)
+$ sudo kubectl get pods
+$ sudo kubectl get svc
+	ip is displayed
+	copy the name, cafeweb-xxx>
+$ sudo kubectl exec -it <paste   cafeweb-> -- /bin/bash
+# cat getAppParameters.php
+# exit
+
+
+/////////////////////////////
+$ sudo nano xxx.yaml
+--change the contents
+$ sudo kubectl apply -f xxx.yaml
+
+$ sudo kubectl get deployments
+$ sudo kubectl rollout restart deployments cafeweb
+/////////////////////////////
