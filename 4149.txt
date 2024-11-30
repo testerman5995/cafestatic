@@ -1,0 +1,723 @@
+This is for all git hub repository:
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt-get install -y nodejs
+
+#########Git Repositories################
+
+Java Jsp Web App: https://github.com/sreepathysois/java-jsp-maven-webapp-ci-cd.git
+
+
+Nodejs Monitoring: https://github.com/sreepathysois/nodejs-monitoring-demoapp.git
+
+Python Moniroting App:  https://github.com/sreepathysois/python-demoapp-monitoring.git
+
+Jenkins.txt  installation step:
+
+sudo apt-get purge --autoremove jenkins -y
+sudo rm -rf etc/apt/sources.list.d/jenkins.list
+
+sudo wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key |sudo gpg --dearmor -o /usr/share/keyrings/jenkins.gpg
+
+sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+sudo apt-get update
+
+sudo apt-get install jenkins
+
+
+sudo systemctl start jenkins
+
+sudo chown -R msis:msis /var/lib/jenkins/secrets/initialAdminPassword
+
+sudo cat  /var/lib/jenkins/secrets/initialAdminPassword
+
+Go to browser http://localhost:8080 or http://<ip adress>:8080
+
+Submit Password
+
+Install Suggested Plugins.
+
+jenkins .sh installation:
+
+#!/bin/bash
+
+# Purge Jenkins and remove its source list
+sudo apt-get purge --autoremove jenkins -y
+sudo rm -rf /etc/apt/sources.list.d/jenkins.list
+
+# Download and add the Jenkins key
+sudo wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins.gpg
+
+# Add Jenkins to the sources list
+sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+# Update package lists
+sudo apt-get update
+
+# Install Jenkins
+sudo apt-get install jenkins -y
+
+# Start Jenkins service
+sudo systemctl start jenkins
+
+# Print Jenkins status
+sudo systemctl status jenkins
+
+################Log in to Dashboard requires Credentials###################
+
+sudo chown -R msis:msis /var/lib/jenkins/secrets/initialAdminPassword
+
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+############Log in to Jenkins Dashboard###############
+
+
+http://localhost:8080 or http://<ip address>:8080
+
+###########Install Recommended Plugins###########
+
+Install suggested plugins
+
+###########Create User#############
+
+Username: jenkins
+
+Password: jenkins@123
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#########Docker Compose Install##############
+
+mkdir -p ~/.docker/cli-plugins/
+curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+
+chmod +x ~/.docker/cli-plugins/docker-compose
+
+sudo docker-compose --version
+
+###############Links of Docker Compose#############
+
+Cafe Dynamic App: https://github.com/sreepathysois/Cafe_Dynamic_Website.git
+
+Eccommerce App: https://github.com/sreepathysois/phpmysql-app.git
+
+WordpresApp: https://www.linode.com/docs/guides/wordpress-with-docker-compose/
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+Set Username: jenkins
+
+Password: jenkins@123-----
+
+
+
+
+gcc -o insertion_sort main.c operation.c = compile
+./insertion_sort = run
+
+gcc -o selection_sort main.c operation.c
+./selection_sort
+
+gcc -o bubble_sort main.c operation.c
+./bubble_sort
+
+gcc -o merge_sort main.c operation.c
+./merge_sort
+
+gcc -o heap_sort main.c operation.c
+./heap_sort
+
+gcc -o quick_sort main.c operation.c
+./quick_sort
+
+gcc -o linear_search main.c operation.c
+./linear_search
+
+gcc -o binary_search main.c operation.c
+./binary_search
+
+
+zip lds_assignment1.zip insertion\ sort/ selection\ sort/ bubble\ sort/ merge\ sort/ heap\ sort/ quick\ sort/ linear\ search/ binary\ search/ = to zip file.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+###########Steps to setup Kubernetes Cluster###############
+
+Host Details:
+
+Host 1 : 172.16.51.41  Master
+
+Host 2 : 172.16.51.45  Slave Node 1
+
+Host 1 : 172.16.51.46  Slave Node 1
+
+
+#########Resolve Hostname in all 3 Nodes############
+
+Sudo nano /etc/hosts
+
+
+127.0.0.1       localhost
+172.16.51.46    msis.kubenode2.com
+172.16.51.46    cafeapp.com
+172.16.51.46    bookapp.com
+172.16.51.46    msiseccom.com
+172.16.51.41    msis.kubemaster.com
+172.16.51.45    msis.kubenode1.com
+
+
+########## Install Basic and prerequisite Package on all 3 Nodes###############
+
+sudo apt-get install docker.io
+
+sudo systemctl status docker
+
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+sudo apt-get update
+
+sudo apt install kubeadm kubelet kubectl 
+
+##########Install Kubernetes Control Plane on Master Node only##############
+
+sudo swapoff -a
+
+sudo kubeadm init
+
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config  kubeadm join 172.16.51.124:6443 --token s0nurc.x13g561nd5qost2o \
+	--discovery-token-ca-cert-hash sha256:f3d80141dc1327229e88f7050dc04c676e4d7cdfdf688e5d4daa7f8a27e14b41
+
+
+
+Generate Toke like this For example:  kubeadm join 172.16.51.41:6443 --token 1y0cdu.l9x2hot5dw0as6v4
+
+Check status:  sudo kubectl get nodes
+
+If permissiion denied error: sudo chown -R msis:msis /etc/kubernetes/admin.conf
+
+Install weavenet Network on Master Node:
+
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml 
+
+
+kubectl get pods --all-namespaces
+
+
+
+############Join the Slave to Master ############
+
+Run on all Slave nodes:
+
+sudo swapoff -a
+
+Use appropiate and your token: 
+
+sudo kubeadm join 172.16.51.41:6443 --token <<1y0cdu.l9x2hot5dw0as6v4>> --discovery-token-unsafe-skip-ca-verification^C
+
+#############Validate in Master################
+
+kubectl get nodes
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+kubeadm join 172.16.51.124:6443 --token 35nxwp.pky7qxqv8xzp96x5 \
+	--discovery-token-ca-cert-hash sha256:5171153ec540dfa907e8ed7acfd966357eed41a15141c9b6e9ac77718b9cc884 
+
+
+
+yu04dt.lyooxmoogg7ef1he
+
+
+kubeadm join <master-node-ip>:6443 --token yu04dt.lyooxmoogg7ef1he  --discovery-token-ca-cert-hash sha256:381f3d5f875111224f9be258ed3d09730029b5e20af218ffe3cae18d5173f3cb
+
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJZkZucWFJcmwzcVV3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRBNU1qTXdPVE00TURKYUZ3MHpOREE1TWpFd09UUXpNREphTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUM3c3pTNlkxSmdKTk5rMDFKTTBQWlF2aDBUdFhxaWFZMkorK3ZFODQreTFadU5ML25KNkV2Z1pKcGIKeGN0THBzeEtORmp3NzBPWDVSUUs1bFpqWjk5TzEwTDFpZGowN3lGK2NQdjVvM2VxSnFRUW9YMERBYXpqRXdKLwp2aS91WHN4NnhQUjFBeW03em9qc1A0Q0dyV2F6MDNWQ24rOG9pb2xDR1BCOHBwNGl5MldWRjl1NG16UVgwemUvCkh5S2lEZ2JwMWx5bTJzOUZrdERud3ZJbExJYU9CZERxQTUyQm9DM1p2WUgrMDU2UE5vSEhBczRORWJpZnpkVWkKVk9LVkYycHNhdDB4aHlsRHU2Y1lqN2RTbDhCWTBSdEVLN0RtTEtmSGxSUFVpanFvajJmSDZOZEJHRkN0RlUvSwp6NEpoSHlhUnVYa2JWTWlMWThkTU12RHFXY2N6QWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJUMnU5bzJCck1hQUZHaGhhdDBVdnNZbFRyUTFqQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQUFaSCtHTlVKSgpaZTAyV2RZZ1RyRjM4MHVsejQrek1UaXgrSC92OUdzN3gvdUJPaVV3YkVvWFEyNTF6M3h6Z0hiY0hHSCt3aFU5Cmtud1ZLWmsxWXRKN0crdFJoNi8yNmZpYzd6U2RZVWhwMHJWelY4M1RDM2hEdFUyaW0xK3BTelVLTU5YNkRWN0EKaU52VGJoR1k1UzZNOTlVMVl2Tko0eEtFTWk4aU52eW9QT3c3aUJJSVZHaGNFaVNzZUpMcUdjYjVhdU1Ia2IySQpwY3hFeEpocDV2ODB6eGcyZG1BcHhGWXVHTGR5a2hqcFBIeUo2bHhhWmVMajFjcGFNV3pnbENldHFQMjlHSkhjCjM4OE1jTnNUd0xTVThkU2lsTE94T0F2VTNVWkc2eUYyN2NtODNhZllYR0pKNWN1VVJDdG1pNkNvZHNPSGtvUTYKSm8zQVRFaTdYOXB0Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://172.16.51.124:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+current-context: kubernetes-admin@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURLVENDQWhHZ0F3SUJBZ0lJZUtEMExuNFdtUFl3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRBNU1qTXdPVE00TURKYUZ3MHlOVEE1TWpNd09UUXpNRFJhTUR3eApIekFkQmdOVkJBb1RGbXQxWW1WaFpHMDZZMngxYzNSbGNpMWhaRzFwYm5NeEdUQVhCZ05WQkFNVEVHdDFZbVZ5CmJtVjBaWE10WVdSdGFXNHdnZ0VpTUEwR0NTcUdTSWIzRFFFQkFRVUFBNElCRHdBd2dnRUtBb0lCQVFDM2h3WTMKZVhxQ04zT2xQUElEdDRzN1h1NC9PRTVwdEJjTmhwRVNCem9xbWpUdWE3cS9nQjhsbmpTUVdIb3RESVI4TVF0bApKTzFtSks2blljV1ovRHVldE1CK240QXdUOSs5Ty9EU3ZSL0FGUVByanZIRGtDTXU4eWExQ1pEb2tBYUNCRStsCmJOelh6Umg4bWY0bXlhZGlQaCtRNWVxcGdsbjVzYk1YYTB0d3NiRFdTL1EzRGZzMmhraHIyd1RTeTVqOEZ1cmsKa2VuNTg0WlVNbFc1dlA5VWs5dk5OWlZtbWF6cjdjSmt2NkhNUEpBTmppTVAyRDRCNlVHUWtBZWtSYm0vZDRjUQpYK2h2bVdJbzZFc2NpYUpvT1M2TVVpd200WG0zOXUxR2RxOStYRno1S01jRUh1S3VXTHNoOGcxMWtwY2I4c0JVCjAwSG91NVNFRWFmbkZ5czdBZ01CQUFHalZqQlVNQTRHQTFVZER3RUIvd1FFQXdJRm9EQVRCZ05WSFNVRUREQUsKQmdnckJnRUZCUWNEQWpBTUJnTlZIUk1CQWY4RUFqQUFNQjhHQTFVZEl3UVlNQmFBRlBhNzJqWUdzeG9BVWFHRgpxM1JTK3hpVk90RFdNQTBHQ1NxR1NJYjNEUUVCQ3dVQUE0SUJBUUNvYVlxTDh3bVRkd0NzQ1N3bXR2QnRKK0svCmRDblpzVWVBZUhmcWZ6dGRnRnE5REJWdmgyWlhDdmMxSVJRTldNaWlDRFdTMk04OWpCc2E4THRGQWtaaUh4OTkKeUt1TXV5enRac0RrZVEvSGp2M0xQZ0JwcFhQWGxGdDJ4SWg1enVHaTNodW91c0M0a3prSmNwWDVhejMvaVk4bgpKSVE5Nk90VFE0K2t1elBjMzd2R1czeTA5Q3RGTWRERm1OMFBzeFpQVXpqT2VRekhZR0J6UTNucmRYaXB1YXZiCmo1OG5xQ2NZZ2MyN2hrZ2JVeU14VzN5SExIWGJ3TXRwRTFnSnF6Z2dFdXdERjJNTFhmeEtGb1lzM1J5a3VsbDgKdXNUdG1YTHhGR3UzNWw5SXgwMDRSWDZHTjZwMEFTOHRMNXNYb2FQRzJPYzBCVklacmFJM1BkRjdrM01yCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBdDRjR04zbDZnamR6cFR6eUE3ZUxPMTd1UHpoT2FiUVhEWWFSRWdjNktwbzA3bXU2CnY0QWZKWjQwa0ZoNkxReUVmREVMWlNUdFppU3VwMkhGbWZ3N25yVEFmcCtBTUUvZnZUdncwcjBmd0JVRDY0N3gKdzVBakx2TW10UW1RNkpBR2dnUlBwV3pjMTgwWWZKbitKc21uWWo0ZmtPWHFxWUpaK2JHekYydExjTEd3MWt2MApOdzM3Tm9aSWE5c0Uwc3VZL0JicTVKSHArZk9HVkRKVnViei9WSlBielRXVlpwbXM2KzNDWkwraHpEeVFEWTRqCkQ5ZytBZWxCa0pBSHBFVzV2M2VIRUYvb2I1bGlLT2hMSEltaWFEa3VqRklzSnVGNXQvYnRSbmF2Zmx4YytTakgKQkI3aXJsaTdJZklOZFpLWEcvTEFWTk5CNkx1VWhCR241eGNyT3dJREFRQUJBb0lCQUQ2ejlDeko1VkJPRDhYWgp2N29EWUorRlBKTCs4dE5zZ3gvTTVRMnF5SFc3disvaGdLbGk1Y0ZkZnduK0lLZjVpZDVBaDJza0piUHJQbnpUCmk4YWpoZDhnVkZBdXdJWkJFK2s4Ykhnanc1QkYzZFFDUDVtWVNsMEZHQ2xzUGtVbXlBSnQ1S1JaUUU2K3RPb0YKVnU3N29LT1JKQW5HYzlrOFB1OXZoZ2V2VWRRTFhLVnNUMklicW54dDg4M0JTc1FOK25wdFJ6ODdNV3dKeVBSeQpjOUYvNjRNT1ZTRElmMFh0MVhsZ1A5NVBwYTJzaXBOZlo5eTZBbVdoSE9pSU1TNkE1QUhrdzRpakgwQzBrTVR3CkhNRGpJdlpTODgrZTZCUXh6SVVuZDRJNlVyakVQaHN4UHk0SG9WVHB2bmVBcEt0dEVHRnB3a3ZxVnFzVHRiQXQKUU9lRGNEa0NnWUVBd2ozamZIZmdpcG15UEx4enF3MFFaQksxZytFNWxJRzJkbDBSTm1Ea3pqVDZnZkVDZkxOLwpHUUVmU3ZTTUxIMU9EVEh6VkdRUWR3SDczWWg4bFFGYm96UnJaV011c1RjM2pwaHRxQlg5TitPbHE2S1l6TEFxCmN0Q1JHZTZoaTluMytYZnZpWjVlL0hERk1sS2JtZTJXRHNvcjBKckN3M09Ieks3ZUladmZnMjBDZ1lFQThlRU8KRG5jbDR5QklKWks5V3o1SkZnOXh1NUVpVnNnbmEySGRZTDdNQ2M0WUFXbHdFYVAzRDlEbThUSHhDQnREUUR6ZAo2dFJTNS9jMW01K24zVy9qS2tkOXpuN2tVVWRGSzJOZ1pyYzBIcFcvODFjVjU2cDJmWEdJalV1cmE1RXlQb2xRCmNlVTRXdVg1ZXNkU1lRM3QxT2VlV2gyN1E3V2ZzMi8yRlBLMW1FY0NnWUVBdHVNaXIrMEhKRGoya3kwMUUxYm4KbWZIcnFsS0Ryb283VEZMd2crelRRanlycVhGTlVEQ0plUGVQaVRtY1NiOXBvQTdwOXdtSVh5VWxDajhhWGdtNwpTSDF3cVRPcm9QeEdlU0tZRE8wM1VFb3RrTjgxVTNTRFl6dHhnNk1sdzlIbEk2U0RpMlhzTlcvUW5FTWZjdDA2CnJvNDRsdDlBaGxyZkFCK2Qwck02emprQ2dZQkQ5UlJLOGlUZDdGcjQyNEtDR1R6Vml0OU1jSmx5UW1mNDNwVWgKTWxvSFF6VXhhRnRKU1lVSGw0emJKVW53R2lESjhvL3pBMWFMdjhQN0JsOVdjcklqVmRTOTZKN2pTeC9lOGR2Swo0Qnd2bjZrL2lDOHFXSlZUNTBzVFQ3aEl6NUdMU204a29OODFncm1XU2x3VjBxRUltVTYvU08wdE4rRTN1L1FxCnJJcGl6d0tCZ0NCelVHNmtwQmpmZDIyanBIOGdvb25FNUptcHBVS3h5dzlNaWZROTVnUkdVZ3ViT1BuMUc3V08KMDJSMkgwUnV6YkRoZEtybytQdG8wTkMwaXBSNmV5dmhONjJhbXJ2aGUzcVBHUzBqSjFJSDlNaTBUM2x2Y3dYRAp2VGc2aFlxcVdCb0hOWENjL0hZOFUrSjRCRHpzOXY4VzJlVW9VbmNoV3I0VGZPNWVJZmdhCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+
+
+
+
+https://lighthouse.manipal.edu/d2l/home/29215?activityId=https%3a%2f%2fprd.activityfeed.ap-southeast-1.brightspace.com%2fapi%2fv1%2fd2l%3aorgUnit%3a29215%2farticle%2fb159e445-165b-4b03-b9fd-b78fd2a57ea3#ActivityFeedWidget
+
+
+---------------------------------------------------------------------------------------------
+kubeadm join 172.16.51.124:6443 --token s0nurc.x13g561nd5qost2o \
+	--discovery-token-ca-cert-hash sha256:f3d80141dc1327229e88f7050dc04c676e4d7cdfdf688e5d4daa7f8a27e14b41
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJTkZXZHVpalA2SDB3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1EVXhNekkxTWpOYUZ3MHpOREV4TURNeE16TXdNak5hTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUMwM1JGWDJKTFFqU3FGKzA4UWZwTEVCOCt1WVQ2d280SmIzbnJQdzYveXRvUmpvcjJFSmh5ZTVhM1gKUmxkejZHOXE3UURsZXI1cTBRNnQzeGdRSnFVbUhKYzdUK0ZiTzNHRzR6Z0xRcW5POXBZQTBGTWw1Y01rd3AwdApUN1UyNEVwREw2TWY5TzY0OFpJZmxOc2VKNUlkTWpxRnk0WkgwaXJWV3pBbXBNWVY4a1JGRFk1bmdWTzhwOEtHCkdqVzNoVE1WVDMxbk1URlN6VXdKaThGWkZIZnFZNzRVYTBLektPcWZBTFpmKy9JRHRneXA1Y0NpaDBxSndLeVoKN0dnZ1ZVV2lsTmdneEhOOUozNFUyQWMveUlDMG1jcHIxQkMycllRTngvaVhkSk55ZVloaHIrUFR6OXh1YTcyOAp0S3NkbTJlMkptOWcycjhMR29OVGZFeXJZbHE1QWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTNGloOUxlUmRMamF0SzNxcFRpc3VNa3R6UHl6QVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQWRFT2JJbHJiQwpMOXBITGFQeU8vemJUKzNocXhCaU5FMjFzZEphTVFhaFlPb1V4eDdDcVBKQ2NWdVZhYllMWVR5MU05ZUVpWVZyCkY3cFk3VVVCUThrV1NrZGx5OGRZcnRNeTdLbUxFZVFWcTF6emNmTGRZaVpiaWJHRytKeEVTcndJQ0ZYWVI4ZXYKSFlPaEJxOVhXbi9qclcwNnJCTjZlUzJqWitUOUpkZWpzMnhzQi8vUGxyY0JGVnlzZ3ZKVTV6a3Btc2FWQm5tVwozSC9hVG50Wloybk11a2w5bG9FbktHZ25IWllRaTQrR3BLdEw0Tk1jT1hVNzdHbHRkVXFKK0VSdXN2c1ptLzYyCk1va2p4a2NzSDNtYnZFMDBGYU0raWJCdDZuRnB3UUYzMUJQZ2NtQUdYQnY4aTZzejd6TllORXYvQ1hxdElabk0KaVpyZnRHajN0UE9mCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://172.16.51.124:6443
+  name: kubernetes
+- cluster:
+    certificate-authority: /home/msis/.minikube/ca.crt
+    extensions:
+    - extension:
+        last-update: Wed, 06 Nov 2024 13:51:14 IST
+        provider: minikube.sigs.k8s.io
+        version: v1.34.0
+      name: cluster_info
+    server: https://192.168.49.2:8443
+  name: minikube
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+- context:
+    cluster: minikube
+    extensions:
+    - extension:
+        last-update: Wed, 06 Nov 2024 13:51:14 IST
+        provider: minikube.sigs.k8s.io
+        version: v1.34.0
+      name: context_info
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURLVENDQWhHZ0F3SUJBZ0lJYzlqVXp0UUc1UDB3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1EVXhNekkxTWpOYUZ3MHlOVEV4TURVeE16TXdNalZhTUR3eApIekFkQmdOVkJBb1RGbXQxWW1WaFpHMDZZMngxYzNSbGNpMWhaRzFwYm5NeEdUQVhCZ05WQkFNVEVHdDFZbVZ5CmJtVjBaWE10WVdSdGFXNHdnZ0VpTUEwR0NTcUdTSWIzRFFFQkFRVUFBNElCRHdBd2dnRUtBb0lCQVFEZWU0WUYKZDE4dCt1cE9QS2FUc0VSNzg4cmJKV2lkeGZLREdPNXVBQTBRMWYzN1czc2l2c256cVlVaU1pWFpwa0RJeXJ5VgpLdW5nOTlTVE80YlpaRjlwaGs5OTQyczVrR3lDYkhyOHRiOTE2dDA2dXVkUjQ2cTNRc3ZIcjdkU2d3RXVldkRiCkdUMEQxcTlCVkE4SDg5akxqY2xtRGZBZUpNZjZkL2o1NjZLakU2L0FOZWlHZWdDZEQzcURoS2dkK1g2ZEVaMXcKMlRmdTI5L3A5ZlMwa0t2bEozd2JTVU1HQXRESy9pM2NTVStFWVNGT2lmSW9XODZqdUdhUWJCY2xIc2pmY1JkZAppUGFqcXE1Si83MkQ1MkxTRnp6S3FxbHMrRVI0aDhaeWowYXNPUzczMit2cEt0aUVra0tOaUVlMXpaWDdSaDBrCmlad0xXeFVqSFltdkQ2ZVpBZ01CQUFHalZqQlVNQTRHQTFVZER3RUIvd1FFQXdJRm9EQVRCZ05WSFNVRUREQUsKQmdnckJnRUZCUWNEQWpBTUJnTlZIUk1CQWY4RUFqQUFNQjhHQTFVZEl3UVlNQmFBRkxpS0gwdDVGMHVOcTByZQpxbE9LeTR5UzNNL0xNQTBHQ1NxR1NJYjNEUUVCQ3dVQUE0SUJBUUJmL3RLbFBkTjdnMGo5VThYTDBtSjQvc2RTCnkyVEsxbGFaK1A5WFF3eEtZdGwvV0tEbTV4K3dSaDdGYUVaMVdCMjhGOC9XdW92S1B3NWJxaitPMHdTN2xXV2cKeHI3bE9CQVN1Rmk0SElFQ3ZnaHZLdkFHVlZCeHBBaU9uTndUQm83bU9vSjBhYjFlaUNhcjRNSFQ1Y0VVUVpwUwpSbEU0eE5qVjlCTGFoMEJsZEVEMGxya1NDbWdCMTJpL2UyWi81aDRHaXFWdjhwZkxoZmZPQ1QwYW4yR3VDZ3lECmtGU2JDclFqc0trWitzQUpFMWtEU3VNb3dVM0lHdFU4US80VzJUKzBxbWkxT2N2K3pMWFEvZTl6M3lqc3VxMHoKZVRPSHRmV0Z4MUxONDJBL0t2YTRRQlpLSWU3RVdPZ2tGZzdmK2diYXF6dExRa3ZXYktMK3ZXbXgzeEVQCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBM251R0JYZGZMZnJxVGp5bWs3QkVlL1BLMnlWb25jWHlneGp1YmdBTkVOWDkrMXQ3CklyN0o4Nm1GSWpJbDJhWkF5TXE4bFNycDRQZlVrenVHMldSZmFZWlBmZU5yT1pCc2dteDYvTFcvZGVyZE9ycm4KVWVPcXQwTEx4NiszVW9NQkxucncyeGs5QTlhdlFWUVBCL1BZeTQzSlpnM3dIaVRIK25mNCtldWlveE92d0RYbwpobm9BblE5Nmc0U29IZmwrblJHZGNOazM3dHZmNmZYMHRKQ3I1U2Q4RzBsREJnTFF5djR0M0VsUGhHRWhUb255CktGdk9vN2hta0d3WEpSN0kzM0VYWFlqMm82cXVTZis5ZytkaTBoYzh5cXFwYlBoRWVJZkdjbzlHckRrdTk5dnIKNlNyWWhKSkNqWWhIdGMyViswWWRKSW1jQzFzVkl4MkpydytubVFJREFRQUJBb0lCQUhiLy93bUJkZ2wwQWt0aQpxWDZwYzVnUktGbmJRbi9SVnd2RUZCUUdOdmJnWHY5SlNTMm1ld0szazV4YzBsMytUUHlaWkJFdGFQZUoxOHdBCnRQb21jOXBQbXNrdEVUY3pCcmNrS3d4c2NrSXlJNjY4TmVwWktnRG4yM090aXhLNU83S08wN0Y5YUdOYk8xWm8KRGJvbE5icDYxbFNkOCtkTHFTTlJkSHpKQ3E3S1k1TXZyTXhST1V3NWk1bU44OWRieUFFamN5MXlBSmxYUnpMNQo1NXk4ZHR2eTc1TUdIcU1wMmhFR0J3RE4wb2wrN3pQUmN4TW1mcEwyWGgyNTg2c0Z3bEdDSUp0Vm5YdUlrZ011CjBMSm9zZFVVdDB1VjQ5UFZQdkN4d0I4cjlETHhUNmlPSlNsSVMrbWN6YzFoandkY0tCL2tLYVBrSWp4c1lQTGwKbW5FSFlQa0NnWUVBNzRFMU5YZFB0dXpWUGVPTytnQmJnbFVPc1lmVklsOXBRNUg0Y3U4ZXl0TFdvY2ZQSFJSTgpwRHc1ZENBank1cW5sMm9FWnNUSGxSSzBBaFlYcDVXc1ZMWG9RNHVMY1N1TXEzMitBc3VKSStwNFJmU212V1k2Cnd0ZG9GTTdBdzRKd05naHdyVEVtOXduQWZYcklrSm5SZkNqdjRESGhPTG5DaDRvbmpTZDluME1DZ1lFQTdjNHcKOFh4SlpzbWl4Z1FMSkF6RHQ2OUQ5YnZKZkFiSHFHQ1NENFNtNHkrNElyYkJzT2xHeGN3K25OcE5UcE9rQVJaSAptQUVVTy9PRGJZd3B6aUNYYVc2aDQvcDl3YU0vbTY1YUpzdkJPcVExeUl3Wm9YNW1VVG0xUVBaUXpZUVpCaEVwCkNiUDg0KzhxZGtINWtSa0Mxb2dCTU1mWllDeWpYYjBpMFRRVmFmTUNnWUVBeFd4V2Rmb2hoWUgzelFvMUl6TUUKTzR6dGpiMlFITU5WTzlPcFh1UnBGM3R3WE84ZGRMVDF3em01aWxXcjYvdFJ4bWdudEtia2RhZHpKbjBiaHBMRAorUmZ4bXl2K0I0MkVhU0EvYm9Ka1Myek5NNjBWZk80MTVjSTJFMkRTV05hK3RHdUVwZDdzWlpwdVI0RGNyd1Y4ClBzSm42UUIwekpPakhLTHZNMVdvSVkwQ2dZQmc3ZytqRHM3NGQ2M0NXcm1UeXlRbmhlZ0VqTE9XdTBpOGlBaGgKRE9mZGFJRDhuVk9iNGFuNFM4VWx1QkdVdXJjNXZqUVdjRElvTVp6YmxTc2hHc1c4c3R5SUNYMGk1WUN5MjBGaAoyT0Y5SHB2Umo5R09zdS9Qb2Q4UWlKWHMvekFYK2Z5cE9OVVdyMUMyZlRQVmdjVlhYbjVsdk1BTTVJVCtXMjZLCnFWa2xJd0tCZ1FEWXF0TzdmSlJPVlJoQmk0Y0ZGRS9HazlNWkt5RElCQmoycnJtZWtwNXZSUU5CQUNlT3ZZNW4KcHhwdU9zcGJjMDEvdWNodmV6RDVPYSsxek9IZGxsWFdkaHpmc2JCKzlRK3NGSXlyMzN0OUd4S3ZQOFlNVGtVdgpsSHlYaUl1OFNIY1pCaStmVUJhOElkTGZVZnI1RTNoMm1BRGw2RE9QRCsyeStkYmlKakVWVVE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+- name: minikube
+  user:
+    client-certificate: /home/msis/.minikube/profiles/minikube/client.crt
+    client-key: /home/msis/.minikube/profiles/minikube/client.key
+
+
+
+
+#!/bin/bash
+
+# Variables
+REPO_URL="https://github.com/sreepathysois/static-website.git"
+CLONE_DIR="/tmp/static-website"  # Temporary directory to clone the repo
+DEPLOY_DIR="/var/www/html/cafe"  # Directory to deploy the website
+BRANCH="main"                   # Git branch to clone (default is 'main')
+PORT=8080                       # Port for the Python HTTP server
+
+# Step 1: Clone the GitHub repository
+clone_repo() {
+    echo "Cloning repository from $REPO_URL..."
+    if [ ! -d "$CLONE_DIR" ]; then
+        git clone -b "$BRANCH" "$REPO_URL" "$CLONE_DIR"
+    else
+        echo "Repository already cloned in $CLONE_DIR."
+        cd "$CLONE_DIR" && git pull origin "$BRANCH"  # Pull latest changes
+    fi
+}
+
+# Step 2: Deploy the website to the server
+deploy_website() {
+    echo "Deploying website to $DEPLOY_DIR..."
+
+    # Create the deployment directory if it doesn't exist
+    sudo mkdir -p "$DEPLOY_DIR"
+
+    # Copy the contents from the cloned repository to the deployment directory
+    sudo cp -r "$CLONE_DIR"/* "$DEPLOY_DIR/"
+
+    # Set the proper ownership and permissions for the files (if needed)
+    sudo chown -R $USER:$USER "$DEPLOY_DIR"
+    sudo chmod -R 755 "$DEPLOY_DIR"
+
+    echo "Website deployed successfully."
+}
+
+# Step 3: Start a Python HTTP server to serve the static files
+start_python_server() {
+    echo "Starting Python HTTP server on port $PORT..."
+
+    # Navigate to the deploy directory and start the server
+    cd "$DEPLOY_DIR" || exit
+    nohup python3 -m http.server "$PORT" &
+
+    echo "Python HTTP server started on http://localhost:$PORT"
+}
+
+# Step 4: Clean up temporary files (optional)
+clean_up() {
+    echo "Cleaning up temporary files..."
+    rm -rf "$CLONE_DIR"
+    echo "Cleanup completed."
+}
+
+# Main script execution
+echo "Starting website deployment process..."
+
+# 1. Clone the repository
+clone_repo
+
+# 2. Deploy the website
+deploy_website
+
+# 3. Start the Python HTTP server to serve the static files
+start_python_server
+
+# 4. Optional: Clean up temporary files
+clean_up
+
+echo "Website deployment completed successfully!"
+
+
+
+
+
+
+# Use an official Python image as the base
+FROM python:3.9-slim
+
+# Set environment variables for non-interactive installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Git to clone the repository
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory for the app inside the container
+WORKDIR /app
+
+# Define the repository and deployment details as build arguments
+ARG REPO_URL="https://github.com/Tarun177/static-website.git"
+ARG BRANCH="main"
+ARG DEPLOY_DIR="/var/www/html/cafe"
+ARG PORT=8081
+
+# Step 1: Clone the GitHub repository
+RUN git clone -b "$BRANCH" "$REPO_URL" /app/static-website
+
+# Step 2: Deploy the website (copy the repo contents into the final deploy directory)
+RUN mkdir -p "$DEPLOY_DIR" && \
+    cp -r /app/static-website/* "$DEPLOY_DIR" && \
+    chown -R www-data:www-data "$DEPLOY_DIR" && \
+    chmod -R 755 "$DEPLOY_DIR"
+
+# Expose the port that the Python HTTP server will use
+EXPOSE 8081
+
+# Step 3: Start the Python HTTP server to serve the static files
+CMD ["python3", "-m", "http.server", "8081", "--directory", "/var/www/html/cafe"]
+
+
+
+
+#!/bin/bash
+
+# Set variables with your specific values
+DOCKER_USERNAME="rbdockers"
+DOCKER_PASSWORD="dockers@123"
+IMAGE_NAME="staticimage"
+CONTAINER_NAME="staticcontainer"
+TAG="latest"
+HOST_PORT=8047
+CONTAINER_PORT=80  # Port inside the container (nginx usually listens on port 80)
+
+# Step 1: Clone the latest code from the GitHub repository
+echo "Cloning the latest code from GitHub..."
+git pull origin main
+
+# Step 2: Build the Docker image
+echo "Building the Docker image $DOCKER_USERNAME/$IMAGE_NAME:$TAG..."
+docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG .
+
+# Step 3: Log in to Docker Hub
+echo "Logging into Docker Hub..."
+echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+# Step 4: Push the Docker image to Docker Hub
+echo "Pushing the image to Docker Hub..."
+docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
+
+# Step 5: Remove any existing containers running the image
+echo "Removing any existing containers with the name $CONTAINER_NAME..."
+docker rm -f $CONTAINER_NAME || true  # The '|| true' ensures the script continues even if no container is running
+
+# Step 6: Run the Docker container with port mapping
+echo "Running the Docker container..."
+docker run -d -p $HOST_PORT:$CONTAINER_PORT --name $CONTAINER_NAME $DOCKER_USERNAME/$IMAGE_NAME:$TAG
+
+# Confirmation message
+echo "Deployment completed successfully. The website is available on http://<host-ip>:$HOST_PORT"
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-website-deployment
+  labels:
+    app: static-website
+spec:
+  replicas: 1  # Number of pods to run
+  selector:
+    matchLabels:
+      app: static-website
+  template:
+    metadata:
+      labels:
+        app: static-website
+    spec:
+      containers:
+        - name: apache-container
+          image: httpd:latest  # Official Apache HTTP Server image
+          ports:
+            - containerPort: 8049  # Container listening on port 8049
+          volumeMounts:
+            - name: website-content
+              mountPath: /usr/local/apache2/htdocs  # Default location for Apache static content
+      volumes:
+        - name: website-content
+          configMap:
+            name: static-website-configmap  # Name of the ConfigMap holding static content
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: static-website-service
+spec:
+  selector:
+    app: static-website  # Matches the deployment labels
+  ports:
+    - protocol: TCP
+      port: 80  # External port on which the service will be available
+      targetPort: 8049  # The port inside the container where Apache is listening
+  type: LoadBalancer  # Exposes the service externally via a cloud load balancer
+
+
+
+
+——————————————————————————————1111111111————————-
+
+
+devops--lab
+
+
+pythonapp excute shell
+
+# Navigate to your project directory (adjust the path as necessary)
+cd $WORKSPACE  # Jenkins automatically sets this to the workspace directory
+
+# Set up a virtual environment
+python3 -m venv venv
+
+# Activate the virtual environment
+. venv/bin/activate  # Use the dot command instead of source
+
+# Install the required dependencies from requirements.txt
+pip install -r requirements.txt
+
+# Run the Flask application
+# You can modify the host and port if necessary (default is host='127.0.0.1', port=5000)
+python product_list_app.py &
+
+php execute shell
+
+
+# Navigate to the workspace
+cd $WORKSPACE
+
+# Start Apache service
+sudo service apache2 start
+
+# Copy project files to the Apache server's web directory
+sudo cp -r * /var/www/html/
+
+# Restart Apache service to apply the changes
+sudo service apache2 restart
+
+
+nodejs execute shell
+
+
+# Navigate to the application directory (if needed, depending on your workspace setup)
+cd $WORKSPACE
+
+# Install dependencies
+npm install
+
+# Start the Node.js application
+npm start &
+
+
+
+tomcat install
+
+cd /etc/tomcat10/
+ ls
+server.xml        
+tomcat-users.xml
+sudo nano server.xml 
+
+
+    <Connector port="8000" protocol="HTTP/1.1"
+               address="127.0.0.1"
+
+
+sudo nano tomcat-users.xml
+ in last line
+
+<user username="jenkins" password="jenkins@123" roles="manager-gui,manager-script"/>
+ 
+
+Nodejs
+Sudo apt-get install git
+Sudo apt-get update
+
+Sudo apt install -y nodejs npm
+Sudo agt-get install dcoker.io
+Sudo usermod -aG docker jenkins
+
+
+———————————————————————————————————————————————————————————————————
+ssh-keygen -t rsa
+ssh-copy-id msis@172.16.51.59
+ssh msis@172.16.51.59 "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+sudo nano /etc/ssh/sshd_config
+
+PasswordAuthentication no
+
+sudo systemctl restart sshd
+ssh msis@172.16.51.59
+
+
+--------
+
+
+h
+sudo apt update
+sudo apt install nfs-kernel-server
+
+c
+sudo apt update
+sudo apt install nfs-common
+
+h
+sudo mkdir /var/nfs/general -p
+ls -la /var/nfs/general
+sudo chown nobody:nogroup /var/nfs/general
+sudo nano /etc/exports
+
+/var/nfs/general    *(rw,sync,no_subtree_check)
+/home               *(rw,sync,no_root_squash,no_subtree_check)
+
+sudo systemctl restart nfs-kernel-server
+sudo ufw status
+sudo ufw enable
+sudo ufw allow from 172.16.51.59 to any port nfs
+sudo ufw status
+
+c
+sudo mkdir -p /nfs/general
+////sudo mkdir -p /nfs/home
+sudo mount 172.16.51.21:/var/nfs/general /nfs/general
+////sudo mount 172.16.51.21:/home /nfs/home
+df -h
+/////du -sh /nfs/home
+sudo touch /nfs/general/general.test
+ls -l /nfs/general/general.test
+////sudo touch /nfs/home/home.test
+////ls -l /nfs/home/home.test
+////sudo nano /etc/fstab
+////cd ~
+////sudo umount /nfs/home
+////sudo umount /nfs/general
+////df -h
+
+
+-------
+
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt apt install openssh-client openssh-server -y
+sudo systemctl enable ssh
+sudo systemctl start ssh
+sudo apt install nano -y
+sudo apt install ufw -y
+sudo ufw allow ssh
+sudo ufw enable status
+
+
+
+
+-----
+
+
+
+Heyyyyyy nfs.... Easy . 
+
+//Master
+sudo apt install nfs-kernel-server
+sudo mkdir -p /deepthinfs
+sudo nano /deepthinfs/text.txt
+sudo chown nobody:nogroup /deepthinfs
+sudo chmod 777 /deepthinfs
+sudo nano /etc/exports
+add(/deepthinfs 192.168.0.186(rw,sync,no_subtree_check)
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server.service
+
+//Node
+sudo apt install nfs-common
+sudo mkdir -p /vijethnfs
+sudo apt update
+sudo mount 192.168.0.144:/deepthinfs /vijethnfs
+ls /vijethnfs
+
+
+
+devops last option 
+$%*********************************************************************************************************************
+
+https://github.com/VIJETH2001?tab=repositories
+
+
+
+
+
+
+
+
+
+Ok

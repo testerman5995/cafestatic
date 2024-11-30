@@ -1,0 +1,134 @@
+
+
+python 
+
+  35  sudo apt update
+   36  sudo apt install git
+   37  sudo visudo
+   38  python3 -m venv testenv
+   39  sudo apt update
+   40  sudo apt install python3.12-venv
+   41  python3 -m venv --help
+   42  sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/
+   43  sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/python1/venv
+=========================
+
+nodejs
+
+  sudo apt update
+   49  sudo apt install -y curl
+   50  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+   51  sudo apt install -y nodejs
+   52  node -v
+   53  npm -v
+
+==========================
+
+simple_static 
+
+ sudo chmod 644 /var/www/html/index.html
+   93  sudo chown -R www-data:www-data /var/www/html/
+
+================================
+
+php
+
+  65  sudo chown -R www-data:www-data /var/www/html/
+   66  sudo chmod -R 755 /var/www/html/
+
+======================
+
+tomcat
+
+
+-------------------------------------termainal----------------------------------------------------------------
+
+sudo ssh msis@<ip remote address>
+yes>
+---------------------------------ip a connect to remote machine-------------------------------------------------- 
+sudo apt-get update
+sudo apt-get install tomcat9 tomcat9-admin
+yes>
+
+checks 
+
+sudo systemctl status tomcat9
+
+
+///////////////////////////configuring of tomcat9////////////////////////////////////////////////////////////////////////
+
+sudo nano /etc/tomcat9/server.xml
+
+**************************edit*******************************************************************
+<connector port="8000" protocol=""
+address= "<id address>"
+
+
+sudo systemctl restart tomcat9.service
+
+setup credential 
+
+sudo nano /etc/tomcat9/tomcat-users.xml
+***********************************edit*************************************************************
+/bottom page
+
+<user username="jenkins" password="tomcat@123" roles="manager-script"/>
+////////////<user username="jenkins" password="tomcat@123" roles="manager-gui"/>
+save>
+sudo systemctl restart tomcat9.service
+
+authentication and authorization
+---------------------------------------------------browser-------------------------------------------------------
+<ip address>:8000
+
+manager webapp
+username: jenkins
+password: tomcat@123
+
+
+
+////////////////////////////////jenkins///////////////////////////////////////////////////////////////////////////
+
+dashboard
+manage jenkins>
+plugins>
+deploy to container>
+install without restart>
+
+
+manage jenkins>
+credentials>
+system>
+global credentials>
+username>
+jenkins
+
+password>
+tomcat@123
+
+id>
+tomcatcerd_last two digit ip address
+
+create>
+
+
+jsp_package_deploy>
+configure>
+post-buid action>
+deploy war/ear to a container>
+war/ear files>
+**/*.war
+context path>
+JavaApp
+add container>
+tomcat9
+
+tomcat9.x>
+jenkins/*********
+tomcat url>
+http://<ip address>:8000
+save>
+build>
+
+
+-----
