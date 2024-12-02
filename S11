@@ -1,0 +1,138 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node{
+    int data;
+    struct node* link;
+};
+
+struct node* newnode(int value)
+{
+    struct node* temp=(struct node*)malloc(sizeof(struct node));
+    temp->data = value;
+    temp->link = NULL;
+    return temp;
+}
+void insertatbegin(struct node** head,int value)
+{
+    struct node* temp= newnode(value);
+    if(*head==NULL)
+    {
+        *head= temp;
+        return;
+    }
+    
+    temp->link=*head;
+    *head=temp;
+}
+
+/*
+void insertatend(struct node** head,int value)
+{
+    struct node* ptr=*head;
+    struct node* temp=newnode(value);
+    if(*head==NULL)
+    {
+        *head=temp;
+        return;
+    }
+    while(ptr->link !=NULL)
+    {
+        ptr=ptr->link;
+        
+    }
+    ptr->link=temp;
+    
+}
+
+*/
+/*
+void insertatposition(struct node** head , int position ,int value)
+{
+    struct node* temp=newnode(value);
+    if(position==1)
+    {
+        temp->link=*head;
+        *head=temp;
+        return;
+    }
+    struct node* ptr=*head;
+    int count=1;
+    while(ptr != NULL && count < position -1)
+    {
+        ptr= ptr->link;
+        count++;
+    }
+    temp->link=ptr->link;
+    ptr->link=temp;
+    
+}
+*/
+/*void deleteatfront(struct node** head)
+{
+    struct node* ptr=*head;
+    *head=ptr->link;
+    free(ptr);
+    ptr=NULL;
+}
+*/
+/*void deleteatend(struct node** head)
+{
+    struct node* ptr= *head;
+    while(ptr->link->link !=NULL)
+    {
+        ptr=ptr->link;
+    }
+    free(ptr->link);
+    ptr->link=NULL;
+    
+}
+*/
+void deleteatposition(struct node** head,int position)
+{
+    struct node* ptr=*head;
+    if(position==1)
+    {
+        *head=ptr->link;
+        free(ptr);
+    }
+    int count=1;
+    while(ptr!=NULL && count<position -1 )
+    {
+        ptr=ptr->link;
+    }
+    struct node* temp=ptr->link;
+    ptr->link=temp->link;
+    free(temp);
+    
+}
+void print(struct node* head)
+{
+    struct node*ptr = head;
+    while(ptr != NULL)
+    {
+        printf("%d ->",ptr->data);
+        ptr=ptr->link;
+    }
+    printf("NULL");
+}
+
+
+
+int main()
+{
+    struct node* head=NULL;
+    insertatbegin(&head,10);
+    insertatbegin(&head,20);
+    insertatbegin(&head,30);
+    //insertatend(&head,10);
+    //insertatend(&head,20);
+    //insertatend(&head,30);  
+    //insertatposition(&head,2,40);
+    //deleteatfront(&head);
+    //deleteatend(&head);
+    deleteatposition(&head,2);
+    print(head);
+
+    return 0;
