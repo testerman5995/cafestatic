@@ -1,0 +1,1139 @@
+Demonstrate fork() system call. Let the parent process display its pid, ppid and a message ‘I’m the parent’. Also let the child display its pid, ppid and a message ‘I’m the child’
+
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main() {
+    pid_t pid;
+
+    // Fork the process
+    pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        perror("Fork failed");
+        return 1;
+    } else if (pid == 0) {
+        // Child process
+        printf("I'm the child. My PID is %d and my PPID is %d\n", getpid(), getppid());
+    } else {
+        // Parent process
+        printf("I'm the parent. My PID is %d and my child's PID is %d\n", getpid(), pid);
+    }
+
+    return 0;
+}
+
+
+
+2.	Let the parent fork and let the child execute ls command. Observe the result with and without having wait()  system call in the parent. 
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+
+    // Fork the process
+    pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        perror("Fork failed");
+        return 1;
+    } else if (pid == 0) {
+        // Child process - execute `ls` command
+        printf("Child process: Executing 'ls' command\n");
+        execlp("ls", "ls", NULL); // Replace child process with `ls` command
+        perror("execlp failed");   // execlp only returns if there's an error
+        return 1;
+    } else {
+        // Parent process
+        printf("Parent process: Waiting for the child to complete\n");
+        wait(NULL); // Wait for the child process to complete
+        printf("Parent process: Child has completed\n");
+    }
+
+    return 0;
+}
+
+3.	Let the parent create 4 children. Make them execute ls, ls –l, pwd and  date commands. (One child executes one command.)
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+    int i;
+
+    // Commands array, each child will execute one of these commands
+    char *commands[][3] = {
+        {"ls", NULL},
+        {"ls", "-l", NULL},
+        {"pwd", NULL},
+        {"date", NULL}
+    };
+
+    // Loop to create 4 children
+    for (i = 0; i < 4; i++) {
+        pid = fork();
+
+        if (pid < 0) {
+            // Fork failed
+            perror("Fork failed");
+            return 1;
+        } else if (pid == 0) {
+            // Child process
+            printf("Child %d executing command: %s\n", i + 1, commands[i][0]);
+            execvp(commands[i][0], commands[i]); // Execute command
+            perror("execvp failed"); // execvp only returns if there's an error
+            return 1;
+        }
+    }
+
+    // Parent process waits for all children to complete
+    for (i = 0; i < 4; i++) {
+        wait(NULL);
+    }
+
+    printf("Parent: All child processes have completed.\n");
+
+    return 0;
+}
+4.	Create a child through fork(). Let the child generate the fibonacci series (1, 1, 2, 3, 5, 8…) upto n numbers. The value of n has to passed as a command line argument. 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+void fibonacci(int n) {
+    int a = 1, b = 1, c, i;
+
+    printf("Fibonacci series up to %d terms:\n", n);
+    if (n >= 1) printf("%d ", a);
+    if (n >= 2) printf("%d ", b);
+    
+    for (i = 3; i <= n; i++) {
+        c = a + b;
+        printf("%d ", c);
+        a = b;
+        b = c;
+    }
+    printf("\n");
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <number_of_terms>\n", argv[0]);
+        return 1;
+    }
+
+    int n = atoi(argv[1]);
+    if (n <= 0) {
+        fprintf(stderr, "Please enter a positive integer for the number of terms.\n");
+        return 1;
+    }
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("Fork failed");
+        return 1;
+    } else if (pid == 0) {
+        // Child process - generates Fibonacci series
+        fibonacci(n);
+    } else {
+        // Parent process - waits for child to complete
+        wait(NULL);
+        printf("Parent: Child process completed.\n");
+    }
+
+    return 0;
+}
+
+5.	Let the parent create a child using fork(). Let the parent geneate an odd series upto n numbers  (1, 3, 5, 7, 9…) and let the child create an even series upto n numbers (0, 2, 4, 6, 8 …). (i) Pass the value of n as a command line argument. (ii) Read the value of n from the user.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+void generate_odd_series(int n) {
+    printf("Odd series up to %d numbers: ", n);
+    for (int i = 1; i < 2 * n; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
+void generate_even_series(int n) {
+    printf("Even series up to %d numbers: ", n);
+    for (int i = 0; i < 2 * n; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
+int main(int argc, char *argv[]) {
+    int n;
+
+    // Check if n is passed as a command-line argument
+    if (argc > 1) {
+        n = atoi(argv[1]);
+    } else {
+        // If not, read n from the user
+        printf("Enter the value of n: ");
+        scanf("%d", &n);
+    }
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        perror("Fork failed");
+        return 1;
+    } else if (pid == 0) {
+        // Child process: Generate even series
+        generate_even_series(n);
+    } else {
+        // Parent process: Generate odd series
+        wait(NULL); // Wait for child process to finish
+        generate_odd_series(n);
+    }
+
+    return 0;
+}
+
+6.	Achieve the same as in Q(5) by using exec() system calls. 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(int argc, char *argv[]) {
+    int n;
+
+    // Check if n is passed as a command-line argument
+    if (argc > 1) {
+        n = atoi(argv[1]);
+    } else {
+        // If not, read n from the user
+        printf("Enter the value of n: ");
+        scanf("%d", &n);
+    }
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        perror("Fork failed");
+        return 1;
+    } else if (pid == 0) {
+        // Child process: Execute even series program
+        char n_str[10];
+        snprintf(n_str, sizeof(n_str), "%d", n);
+        execl("./even_series", "even_series", n_str, NULL);
+        perror("execl failed");  // If exec fails
+    } else {
+        // Parent process: Wait for child and then execute odd series program
+        wait(NULL);
+        char n_str[10];
+        snprintf(n_str, sizeof(n_str), "%d", n);
+        execl("./odd_series", "odd_series", n_str, NULL);
+        perror("execl failed");  // If exec fails
+    }
+
+    return 0;
+}
+7.	Let the parent create 2 children which work on a common sample file. Let one child count the total number of lines  in the file while the other counts the total number of characters  in the same file. Provide the filename as a command line argument.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+void count_lines(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    int lines = 0;
+    char c;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (c == '\n') {
+            lines++;
+        }
+    }
+    fclose(file);
+    printf("Total number of lines: %d\n", lines);
+    exit(EXIT_SUCCESS); // Exit child process successfully
+}
+
+void count_characters(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    int characters = 0;
+    char c;
+
+    while ((c = fgetc(file)) != EOF) {
+        characters++;
+    }
+    fclose(file);
+    printf("Total number of characters: %d\n", characters);
+    exit(EXIT_SUCCESS); // Exit child process successfully
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    const char *filename = argv[1];
+    pid_t pid1, pid2;
+
+    // Create first child to count lines
+    pid1 = fork();
+    if (pid1 < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid1 == 0) {
+        // Child 1: Count lines
+        count_lines(filename);
+    }
+
+    // Create second child to count characters
+    pid2 = fork();
+    if (pid2 < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid2 == 0) {
+        // Child 2: Count characters
+        count_characters(filename);
+    }
+
+    // Parent process waits for both children to finish
+    waitpid(pid1, NULL, 0);
+    waitpid(pid2, NULL, 0);
+
+    return EXIT_SUCCESS;
+}
+
+8.	Let the parent create 2 children which work on a common sample file. Let one child convert all lowercase to uppercase  in the file while the other counts the total number of character ‘a’ s in the same file. Provide the filename as a command line argument
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <ctype.h>
+
+void convert_to_uppercase(const char *filename) {
+    FILE *file = fopen(filename, "r+");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    char c;
+    long pos;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (islower(c)) {
+            pos = ftell(file) - 1; // Get the position of the lowercase character
+            fseek(file, pos, SEEK_SET); // Move back to the position
+            fputc(toupper(c), file); // Replace with uppercase
+            fseek(file, pos + 1, SEEK_SET); // Move to the next position
+        }
+    }
+    fclose(file);
+    printf("All lowercase letters converted to uppercase.\n");
+    exit(EXIT_SUCCESS); // Exit child process successfully
+}
+
+void count_a_characters(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    int count = 0;
+    char c;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (c == 'a' || c == 'A') {
+            count++;
+        }
+    }
+    fclose(file);
+    printf("Total number of 'a' characters: %d\n", count);
+    exit(EXIT_SUCCESS); // Exit child process successfully
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    const char *filename = argv[1];
+    pid_t pid1, pid2;
+
+    // Create first child to convert lowercase to uppercase
+    pid1 = fork();
+    if (pid1 < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid1 == 0) {
+        // Child 1: Convert lowercase to uppercase
+        convert_to_uppercase(filename);
+    }
+
+    // Wait for the first child to finish converting before starting the second child
+    waitpid(pid1, NULL, 0);
+
+    // Create second child to count 'a' characters
+    pid2 = fork();
+    if (pid2 < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid2 == 0) {
+        // Child 2: Count 'a' characters
+        count_a_characters(filename);
+    }
+
+    // Parent process waits for both children to finish
+    waitpid(pid2, NULL, 0);
+
+    return EXIT_SUCCESS;
+}
+
+9.	Let the parent create 2 children which work on a common sample file. Let one child count the total number of words in the file. Let the other child invert the case of alphabets in the file. Provide the filename as a command line argument.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <ctype.h>
+#include <string.h>
+
+void count_words(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    int words = 0;
+    char c;
+    int in_word = 0;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (isspace(c)) {
+            if (in_word) {
+                words++;
+                in_word = 0; // End of a word
+            }
+        } else {
+            in_word = 1; // Inside a word
+        }
+    }
+    if (in_word) { // Count the last word if it ends without a space
+        words++;
+    }
+
+    fclose(file);
+    printf("Total number of words: %d\n", words);
+    exit(EXIT_SUCCESS); // Exit child process successfully
+}
+
+void invert_case(const char *filename) {
+    // First, read the entire content of the file
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read file contents into a string
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char *content = malloc(length + 1);
+    fread(content, 1, length, file);
+    content[length] = '\0'; // Null-terminate the string
+    fclose(file);
+
+    // Invert the case
+    for (long i = 0; i < length; i++) {
+        if (islower(content[i])) {
+            content[i] = toupper(content[i]);
+        } else if (isupper(content[i])) {
+            content[i] = tolower(content[i]);
+        }
+    }
+
+    // Write the modified content back to the file
+    file = fopen(filename, "w");
+    if (file == NULL) {
+        perror("Error opening file for writing");
+        free(content);
+        exit(EXIT_FAILURE);
+    }
+    fwrite(content, 1, length, file);
+    fclose(file);
+    free(content);
+
+    printf("Case of alphabets inverted in the file.\n");
+    exit(EXIT_SUCCESS); // Exit child process successfully
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    const char *filename = argv[1];
+    pid_t pid1, pid2;
+
+    // Create first child to count words
+    pid1 = fork();
+    if (pid1 < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid1 == 0) {
+        // Child 1: Count words
+        count_words(filename);
+    }
+
+    // Create second child to invert case
+    pid2 = fork();
+    if (pid2 < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid2 == 0) {
+        // Child 2: Invert case
+        invert_case(filename);
+    }
+
+    // Parent process waits for both children to finish
+    waitpid(pid1, NULL, 0);
+    waitpid(pid2, NULL, 0);
+
+    return EXIT_SUCCESS;
+}
+
+10. Solve Q-3.5 from text (7th edition)1. Fork a separate process and execute the ls command (fork and execlp system commands to be used)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main() {
+    pid_t pid = fork(); // Create a new process
+
+    if (pid < 0) {
+        // Fork failed
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid == 0) {
+        // Child process
+        // Execute the ls command
+        execlp("ls", "ls", NULL);
+        
+        // If execlp returns, it must have failed
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    } else {
+        // Parent process
+        // Wait for the child process to finish
+        wait(NULL);
+        printf("Child process finished executing.\n");
+    }
+
+    return EXIT_SUCCESS;
+}
+
+11.Create two threads in a main program, let the first thread execute a function to display a message namely “this is thread one” , similarly let the second thread displays “this is thread two’.
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+// Function for the first thread
+void* thread_one_function(void* arg) {
+    printf("This is thread one\n");
+    return NULL;
+}
+
+// Function for the second thread
+void* thread_two_function(void* arg) {
+    printf("This is thread two\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t thread1, thread2;
+
+    // Create the first thread
+    if (pthread_create(&thread1, NULL, thread_one_function, NULL) != 0) {
+        perror("Failed to create thread one");
+        return EXIT_FAILURE;
+    }
+
+    // Create the second thread
+    if (pthread_create(&thread2, NULL, thread_two_function, NULL) != 0) {
+        perror("Failed to create thread two");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the first thread to finish
+    pthread_join(thread1, NULL);
+    // Wait for the second thread to finish
+    pthread_join(thread2, NULL);
+
+    return EXIT_SUCCESS;
+}
+12.Create a common shared memory area where in one thread writes a string termed “Hello There”; the second thread reads the string and displays it on the screen. Also the second string converts all lower case to upper case and vice versa in the shared memory. Next the first thread will read this from the shared memory and will output the same to the screen. 
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <string.h>
+#include <ctype.h>
+
+// Shared memory area
+char shared_memory[100];
+
+// Function for the first thread
+void* thread_one_function(void* arg) {
+    // Write to the shared memory
+    strcpy(shared_memory, "Hello There");
+    printf("Thread One: Wrote to shared memory: %s\n", shared_memory);
+    return NULL;
+}
+
+// Function for the second thread
+void* thread_two_function(void* arg) {
+    // Read from the shared memory
+    printf("Thread Two: Read from shared memory: %s\n", shared_memory);
+    
+    // Convert the case
+    for (int i = 0; shared_memory[i] != '\0'; i++) {
+        if (islower(shared_memory[i])) {
+            shared_memory[i] = toupper(shared_memory[i]);
+        } else if (isupper(shared_memory[i])) {
+            shared_memory[i] = tolower(shared_memory[i]);
+        }
+    }
+    
+    printf("Thread Two: Converted string in shared memory: %s\n", shared_memory);
+    return NULL;
+}
+
+int main() {
+    pthread_t thread1, thread2;
+
+    // Create the first thread
+    if (pthread_create(&thread1, NULL, thread_one_function, NULL) != 0) {
+        perror("Failed to create thread one");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the first thread to finish
+    pthread_join(thread1, NULL);
+
+    // Create the second thread
+    if (pthread_create(&thread2, NULL, thread_two_function, NULL) != 0) {
+        perror("Failed to create thread two");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the second thread to finish
+    pthread_join(thread2, NULL);
+
+    // Read back the modified string in the main thread
+    printf("Main Thread: Final string in shared memory: %s\n", shared_memory);
+
+    return EXIT_SUCCESS;
+}
+13.Write a c program using fork system call which generates Fibonacci sequence in the child process. The number of sequence is to be provided in the command line, ex: if 5 is provided the first 5 numbers of the Fibonacci series will be output by the child process. Perform  necessary error checking  such that a nonnegative number is not to be taken.
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <string.h>
+#include <ctype.h>
+
+// Shared memory area
+char shared_memory[100];
+
+// Function for the first thread
+void* thread_one_function(void* arg) {
+    // Write to the shared memory
+    strcpy(shared_memory, "Hello There");
+    printf("Thread One: Wrote to shared memory: %s\n", shared_memory);
+    return NULL;
+}
+
+// Function for the second thread
+void* thread_two_function(void* arg) {
+    // Read from the shared memory
+    printf("Thread Two: Read from shared memory: %s\n", shared_memory);
+    
+    // Convert the case
+    for (int i = 0; shared_memory[i] != '\0'; i++) {
+        if (islower(shared_memory[i])) {
+            shared_memory[i] = toupper(shared_memory[i]);
+        } else if (isupper(shared_memory[i])) {
+            shared_memory[i] = tolower(shared_memory[i]);
+        }
+    }
+    
+    printf("Thread Two: Converted string in shared memory: %s\n", shared_memory);
+    return NULL;
+}
+
+int main() {
+    pthread_t thread1, thread2;
+
+    // Create the first thread
+    if (pthread_create(&thread1, NULL, thread_one_function, NULL) != 0) {
+        perror("Failed to create thread one");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the first thread to finish
+    pthread_join(thread1, NULL);
+
+    // Create the second thread
+    if (pthread_create(&thread2, NULL, thread_two_function, NULL) != 0) {
+        perror("Failed to create thread two");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the second thread to finish
+    pthread_join(thread2, NULL);
+
+    // Read back the modified string in the main thread
+    printf("Main Thread: Final string in shared memory: %s\n", shared_memory);
+
+    return EXIT_SUCCESS;
+}
+
+14.create and save a  sample text (a file containing any text) in your current working directory . Next write a program which creates two threads such that one thread counts the total number of words present  in the file and the other thread changes all upper case characters to lower case.
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <string.h>
+#include <ctype.h>
+
+#define FILENAME "sample.txt"
+
+// Structure to hold the word count
+typedef struct {
+    int count;
+} WordCount;
+
+// Function to count words in the file
+void* count_words(void* arg) {
+    WordCount* word_count = (WordCount*)arg;
+    FILE* file = fopen(FILENAME, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        pthread_exit(NULL);
+    }
+
+    char c;
+    int in_word = 0;
+    word_count->count = 0;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (isspace(c)) {
+            if (in_word) {
+                word_count->count++;
+                in_word = 0; // End of a word
+            }
+        } else {
+            in_word = 1; // Inside a word
+        }
+    }
+    if (in_word) { // Count the last word if it ends without a space
+        word_count->count++;
+    }
+
+    fclose(file);
+    pthread_exit(NULL);
+}
+
+// Function to convert all uppercase letters to lowercase
+void* convert_case(void* arg) {
+    FILE* file = fopen(FILENAME, "r+"); // Open for reading and writing
+    if (file == NULL) {
+        perror("Error opening file");
+        pthread_exit(NULL);
+    }
+
+    // Read file contents
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char* content = malloc(length + 1);
+    fread(content, 1, length, file);
+    content[length] = '\0'; // Null-terminate the string
+
+    // Convert uppercase to lowercase
+    for (long i = 0; i < length; i++) {
+        content[i] = tolower(content[i]);
+    }
+
+    // Write the modified content back to the file
+    rewind(file);
+    fwrite(content, 1, length, file);
+    fflush(file); // Ensure changes are written
+    fclose(file);
+    free(content);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread1, thread2;
+    WordCount word_count;
+
+    // Create the first thread to count words
+    if (pthread_create(&thread1, NULL, count_words, &word_count) != 0) {
+        perror("Failed to create thread for counting words");
+        return EXIT_FAILURE;
+    }
+
+    // Create the second thread to convert case
+    if (pthread_create(&thread2, NULL, convert_case, NULL) != 0) {
+        perror("Failed to create thread for converting case");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the first thread to finish
+    pthread_join(thread1, NULL);
+    // Wait for the second thread to finish
+    pthread_join(thread2, NULL);
+
+    // Output the word count
+    printf("Total number of words in the file: %d\n", word_count.count);
+
+    return EXIT_SUCCESS;
+}
+
+
+15.Modify the above program to create a third thread too;the third thread  writes “three threads have visited this file”  at the very end of the file.
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <string.h>
+#include <ctype.h>
+
+#define FILENAME "sample.txt"
+
+// Structure to hold the word count
+typedef struct {
+    int count;
+} WordCount;
+
+// Function to count words in the file
+void* count_words(void* arg) {
+    WordCount* word_count = (WordCount*)arg;
+    FILE* file = fopen(FILENAME, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        pthread_exit(NULL);
+    }
+
+    char c;
+    int in_word = 0;
+    word_count->count = 0;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (isspace(c)) {
+            if (in_word) {
+                word_count->count++;
+                in_word = 0; // End of a word
+            }
+        } else {
+            in_word = 1; // Inside a word
+        }
+    }
+    if (in_word) { // Count the last word if it ends without a space
+        word_count->count++;
+    }
+
+    fclose(file);
+    pthread_exit(NULL);
+}
+
+// Function to convert all uppercase letters to lowercase
+void* convert_case(void* arg) {
+    FILE* file = fopen(FILENAME, "r+"); // Open for reading and writing
+    if (file == NULL) {
+        perror("Error opening file");
+        pthread_exit(NULL);
+    }
+
+    // Read file contents
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char* content = malloc(length + 1);
+    fread(content, 1, length, file);
+    content[length] = '\0'; // Null-terminate the string
+
+    // Convert uppercase to lowercase
+    for (long i = 0; i < length; i++) {
+        content[i] = tolower(content[i]);
+    }
+
+    // Write the modified content back to the file
+    rewind(file);
+    fwrite(content, 1, length, file);
+    fflush(file); // Ensure changes are written
+    fclose(file);
+    free(content);
+
+    pthread_exit(NULL);
+}
+
+// Function to write a message to the end of the file
+void* write_message(void* arg) {
+    FILE* file = fopen(FILENAME, "a"); // Open for appending
+    if (file == NULL) {
+        perror("Error opening file");
+        pthread_exit(NULL);
+    }
+
+    // Write the message
+    fprintf(file, "\nthree threads have visited this file\n");
+    fclose(file);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread1, thread2, thread3;
+    WordCount word_count;
+
+    // Create the first thread to count words
+    if (pthread_create(&thread1, NULL, count_words, &word_count) != 0) {
+        perror("Failed to create thread for counting words");
+        return EXIT_FAILURE;
+    }
+
+    // Create the second thread to convert case
+    if (pthread_create(&thread2, NULL, convert_case, NULL) != 0) {
+        perror("Failed to create thread for converting case");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the first two threads to finish
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+
+    // Create the third thread to write the message
+    if (pthread_create(&thread3, NULL, write_message, NULL) != 0) {
+        perror("Failed to create thread for writing message");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for the third thread to finish
+    pthread_join(thread3, NULL);
+
+    // Output the word count
+    printf("Total number of words in the file: %d\n", word_count.count);
+
+    return EXIT_SUCCESS;
+}
+
+16.Forking a child process and making the child process execute a program.
+
+The program may be  related to working  with  array, matrix, files  or string manipulations. (eg:- finding row sum/column sum of a matrix, changing cases of a character string, counting for character occurance in a string, finding the sum of digits of a given number,  counting for words in a file, counting for white spaces(blanks, tabs or newlines) in a file etc.) 
+Hint:- Write the program(code of the child process) in a separate file, compile and create its exe. Invoke this file name in the exec command.
+
+Child program
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    char c;
+    int word_count = 0;
+    int in_word = 0;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (isspace(c)) {
+            if (in_word) {
+                word_count++;
+                in_word = 0; // End of a word
+            }
+        } else {
+            in_word = 1; // Inside a word
+        }
+    }
+    if (in_word) { // Count the last word if it ends without a space
+        word_count++;
+    }
+
+    fclose(file);
+    printf("Total number of words: %d\n", word_count);
+
+    return EXIT_SUCCESS;
+}
+Parent program
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    pid_t pid = fork(); // Create a child process
+
+    if (pid < 0) {
+        perror("Fork failed");
+        return EXIT_FAILURE;
+    } else if (pid == 0) {
+        // In child process
+        // Execute the word_count program
+        execlp("./word_count", "word_count", argv[1], (char *)NULL);
+        
+        // If exec fails
+        perror("Exec failed");
+        return EXIT_FAILURE;
+    } else {
+        // In parent process
+        wait(NULL); // Wait for the child process to finish
+        printf("Child process finished.\n");
+    }
+
+    return EXIT_SUCCESS;
+}
+
+17.Creating one or more threads and making the different threads perform different computations. The  threads  may be  working  with numbers,  arrays, matrices, files  or  performing string manipulations etc. Hint:-  Use pthread library function for creating threads and running them.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define ARRAY_SIZE 5
+
+// Global array of integers
+int array[ARRAY_SIZE] = {1, 2, 3, 4, 5};
+
+// Structure to hold results
+typedef struct {
+    int sum;
+    int product;
+    float average;
+} Results;
+
+// Function for computing the sum of the array
+void* compute_sum(void* arg) {
+    int* arr = (int*)arg;
+    int sum = 0;
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        sum += arr[i];
+    }
+    printf("Sum: %d\n", sum);
+    pthread_exit((void*)(intptr_t)sum); // Return sum
+}
+
+// Function for computing the product of the array
+void* compute_product(void* arg) {
+    int* arr = (int*)arg;
+    int product = 1;
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        product *= arr[i];
+    }
+    printf("Product: %d\n", product);
+    pthread_exit((void*)(intptr_t)product); // Return product
+}
+
+// Function for computing the average of the array
+void* compute_average(void* arg) {
+    int* arr = (int*)arg;
+    float average = 0.0;
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        average += arr[i];
+    }
+    average /= ARRAY_SIZE;
+    printf("Average: %.2f\n", average);
+    pthread_exit((void*)(intptr_t)(average * 100)); // Return average multiplied by 100 for integer casting
+}
+
+int main() {
+    pthread_t thread1, thread2, thread3;
+    Results results;
+
+    // Create threads to perform different computations
+    if (pthread_create(&thread1, NULL, compute_sum, (void*)array) != 0) {
+        perror("Failed to create thread for sum");
+        return EXIT_FAILURE;
+    }
+
+    if (pthread_create(&thread2, NULL, compute_product, (void*)array) != 0) {
+        perror("Failed to create thread for product");
+        return EXIT_FAILURE;
+    }
+
+    if (pthread_create(&thread3, NULL, compute_average, (void*)array) != 0) {
+        perror("Failed to create thread for average");
+        return EXIT_FAILURE;
+    }
+
+    // Wait for threads to complete and retrieve results
+    void* sum_result;
+    void* product_result;
+    void* average_result;
+
+    pthread_join(thread1, &sum_result);
+    pthread_join(thread2, &product_result);
+    pthread_join(thread3, &average_result);
+
+    // Store the results in the structure
+    results.sum = (int)(intptr_t)sum_result;
+    results.product = (int)(intptr_t)product_result;
+    results.average = (float)(intptr_t)average_result / 100; // Revert back from multiplied value
+
+    printf("\nFinal Results:\n");
+    printf("Sum: %d\n", results.sum);
+    printf("Product: %d\n", results.product);
+    printf("Average: %.2f\n", results.average);
+
+    return EXIT_SUCCESS;
+}
+
