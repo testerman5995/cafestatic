@@ -1,0 +1,342 @@
+Book.java
+
+package regno_241047037;
+
+public class Book {
+    private String bookId;
+    private String bookName;
+    private String authorName;
+    private int quantity;
+
+    public Book(String bookId, String bookName, String authorName, int quantity) {
+        this.bookId = bookId;
+        this.bookName = bookName;
+        this.authorName = authorName;
+        this.quantity = quantity;
+    }
+
+    // Getters
+    public String getBookId() {
+        return bookId;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    // Override toString method
+    @Override
+    public String toString() {
+        return "Book ID: " + bookId + ", Name: " + bookName + ", Author: " + authorName + ", Quantity: " + quantity;
+    }
+}
+----------------------
+
+BookStore.java
+
+package regno_241047037;
+
+import java.util.List;
+
+public interface BookStore {
+    void addBook(Book book) throws BookStoreException;
+    List<Book> viewBooks() throws BookStoreException;
+}
+
+----------------------
+
+BookStoreException.java
+
+package regno_241047037;
+
+public class BookStoreException extends Exception {
+    public BookStoreException(String message) {
+        super(message);
+    }
+
+    public BookStoreException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+----------------------
+BookStoreImpl.java
+
+package regno_241047037;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class BookStoreImpl implements BookStore {
+    private Connection conn;
+    private Scanner scanner;
+
+    public BookStoreImpl() throws BookStoreException {
+        try {
+            conn = MSSQLConnection.getConnection();
+            scanner = new Scanner(System.in); // Initialize scanner for user input
+        } catch (SQLException e) {
+            throw new BookStoreException("Error establishing connection to the database.", e);
+        }
+    }
+
+    @Override
+    public void addBook(Book book) throws BookStoreException {
+        String checkQuery = "SELECT quantity FROM books WHERE bookId = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+            checkStmt.setString(1, book.getBookId()); // Change to setString
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                // If the book already exists, update the quantity
+                int existingQuantity = rs.getInt("quantity");
+                int newQuantity;
+
+                while (true) {
+                    System.out.print("Book already exists. Current quantity: " + existingQuantity + ". Enter quantity to add: ");
+                    if (scanner.hasNextInt()) {
+                        newQuantity = scanner.nextInt();
+                        break; // Exit the loop if input is valid
+                    } else {
+                        System.out.println("Invalid input. Please enter a valid quantity.");
+                        scanner.next(); // Clear the invalid input
+                    }
+                }
+
+                // Update the existing book's quantity
+                String updateQuery = "UPDATE books SET quantity = ? WHERE bookId = ?";
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+                    updateStmt.setInt(1, existingQuantity + newQuantity);
+                    updateStmt.setString(2, book.getBookId()); // Change to setString
+                    updateStmt.executeUpdate();
+                    System.out.println("Book quantity updated successfully.");
+                }
+            } else {
+                // If the book does not exist, insert a new book
+                String insertQuery = "INSERT INTO books (bookId, bookName, authorName, quantity) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                    insertStmt.setString(1, book.getBookId()); // Change to setString
+                    insertStmt.setString(2, book.getBookName());
+                    insertStmt.setString(3, book.getAuthorName());
+                    insertStmt.setInt(4, book.getQuantity());
+                    insertStmt.executeUpdate();
+                    System.out.println("Book added successfully.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("SQLState: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            System.err.println("Message: " + e.getMessage());
+            throw new BookStoreException("Error adding the book to the database.", e);
+        }
+    }
+
+
+    @Override
+    public List<Book> viewBooks() throws BookStoreException {
+        List<Book> books = new ArrayList<>();
+        String query = "SELECT * FROM books";
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                String bookId = rs.getString("bookId");
+                String bookName = rs.getString("bookName");
+                String authorName = rs.getString("authorName");
+                int quantity = rs.getInt("quantity");
+                books.add(new Book(bookId, bookName, authorName, quantity));
+            }
+        } catch (SQLException e) {
+            throw new BookStoreException("Error retrieving books from the database.", e);
+        }
+        return books;
+    }
+
+    // New method to display books
+    public void displayBooks() {
+        try {
+            List<Book> books = viewBooks();
+            if (books.isEmpty()) {
+                System.out.println("No books available in the store.");
+            } else {
+                System.out.println("Books in Store:");
+                for (Book book : books) {
+                    System.out.println(book); // Calls the toString method of Book class
+                }
+            }
+        } catch (BookStoreException e) {
+            System.err.println("Application Error: " + e.getMessage());
+        }
+    }
+    public void close() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Database connection closed.");
+            }
+            if (scanner != null) {
+                scanner.close();
+                System.out.println("Scanner closed.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error closing database connection: " + e.getMessage());
+        }
+    }
+
+}
+
+----------------------
+
+Main.java
+
+package regno_241047037;
+
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) throws BookStoreException {
+        Scanner scanner = new Scanner(System.in);
+        BookStore bookStore;
+
+        try {
+            bookStore = new BookStoreImpl(); // Initializing BookStore implementation
+
+            while (true) {
+                System.out.println("Book Store Menu:");
+                System.out.println("1. Add Book");
+                System.out.println("2. View Books");
+                System.out.println("3. Exit");
+                System.out.print("Enter your choice: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();  // consume newline
+
+                switch (choice) {
+                case 1:
+                    // Adding a book
+                    System.out.print("Enter Book ID: ");
+                    String bookId = scanner.next(); // Use next() for String input
+                    scanner.nextLine(); // Consume the newline
+                    System.out.print("Enter Book Name: ");
+                    String bookName = scanner.nextLine();
+                    System.out.print("Enter Author Name: ");
+                    String authorName = scanner.nextLine();
+                    System.out.print("Enter Quantity: ");
+                    int quantity = scanner.nextInt();
+                    bookStore.addBook(new Book(bookId, bookName, authorName, quantity));
+                    break;
+
+                    case 2:
+					List<Book> books = bookStore.viewBooks();
+					System.out.println("Books in Store:");
+					for (Book b : books) {
+					    System.out.println(b);
+					}
+                        break;
+
+                    case 3:
+                        System.out.println("Exiting...");
+                        scanner.close();
+                        System.exit(0);
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice, please try again.");
+                }
+            }
+        } catch (BookStoreException e) {
+            System.out.println("Application Error: " + e.getMessage());
+        }
+    }
+}
+
+----------------------
+
+MSSQLConnection.java
+package regno_241047037;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+public class MSSQLConnection {
+    private static Connection conn;
+
+    public static Connection getConnection() throws SQLException {
+        if (conn == null) {
+            try {
+                // Load the JDBC driver (optional for newer versions)
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                
+                // Load properties file
+                Properties props = loadProperties();
+
+                // Database configuration
+                String url = props.getProperty("db.url");
+                String user = props.getProperty("db.username");
+                String password = props.getProperty("db.password");
+
+                // Step 1: Connect to SQL Server
+                conn = DriverManager.getConnection(url, user, password);
+                System.out.println("Connected to SQL Server!");
+
+                // Optionally create the required table if it doesn't exist
+                createBooksTableIfNotExists(conn);
+            } catch (ClassNotFoundException e) {
+                throw new SQLException("SQL Server JDBC Driver not found.", e);
+            } catch (SQLException e) {
+                throw new SQLException("Unable to connect to the database. Please check your connection settings.", e);
+            }
+        }
+        return conn;
+    }
+
+    // Method to load properties from the config.properties file
+    private static Properties loadProperties() throws SQLException {
+        Properties props = new Properties();
+        try (InputStream input = MSSQLConnection.class.getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                throw new SQLException("Properties file not found in classpath.");
+            }
+            props.load(input);
+        } catch (IOException e) {
+            throw new SQLException("Error reading properties file.", e);
+        }
+        return props;
+    }
+
+    private static void createBooksTableIfNotExists(Connection conn) throws SQLException {
+        String createTableQuery = "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='books' AND xtype='U') " +
+                                   "CREATE TABLE books (" +
+                                   "bookId VARCHAR(50) PRIMARY KEY, " +  
+                                   "bookName VARCHAR(100), " +
+                                   "authorName VARCHAR(100), " +
+                                   "quantity INT" +
+                                   ")";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(createTableQuery);
+            System.out.println("Table 'books' checked/created.");
+        }
+    }
+}
+
+----------------------
+db.properties:
+
+db.url=jdbc:sqlserver://172.16.51.64;databaseName=241047037;encrypt=true;trustServerCertificate=true
+db.name=241047037
+db.username=premagowda
+db.password=Pre@37
+----------------------
