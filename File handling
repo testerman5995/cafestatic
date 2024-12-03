@@ -1,0 +1,111 @@
+Interface:
+
+package rno241047004;
+
+public interface PassingCriteria {
+    double X = 50.0; // Passing grade for Undergrad
+    double Y = 60.0; // Passing grade for Grad
+}
+------------------
+Student.java:
+
+package rno241047004;
+
+public abstract class Student {
+    protected String name;
+    protected String ID;
+    protected double grade;
+    protected int age;
+    protected String address;
+
+    // Constructor
+    public Student(String name, String ID, double grade, int age, String address) {
+        this.name = name;
+        this.ID = ID;
+        this.grade = grade;
+        this.age = age;
+        this.address = address;
+    }
+
+    // Abstract method to check if a student has passed
+    public abstract boolean isPassed(double grade);
+}
+
+----------------------
+Undergrad.java:
+
+package rno241047004;
+
+public class Undergrad extends Student implements PassingCriteria {
+
+    public Undergrad(String name, String ID, double grade, int age, String address) {
+        super(name, ID, grade, age, address);
+    }
+
+    @Override
+    public boolean isPassed(double grade) {
+        return grade > X; // Pass if grade is above X
+    }
+
+----------------------
+Grad.java
+
+package rno241047004;
+
+public class Grad extends Student implements PassingCriteria {
+
+    public Grad(String name, String ID, double grade, int age, String address) {
+        super(name, ID, grade, age, address);
+    }
+
+    @Override
+    public boolean isPassed(double grade) {
+        return grade > Y; // Pass if grade is above Y
+    }
+}
+
+----------------------
+Test.java:
+
+package rno241047004;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+
+public class Test {
+    public static void main(String[] args) {
+        // Create objects
+        Undergrad undergrad = new Undergrad("Alice", "U123", 55.0, 20, "123 Maple St");
+        Grad grad = new Grad("Bob", "G456", 65.0, 25, "456 Oak St");
+
+        // Display isPassed results
+        System.out.println("Undergrad Passed: " + undergrad.isPassed(undergrad.grade));
+        System.out.println("Grad Passed: " + grad.isPassed(grad.grade));
+
+        // Write details to file
+        copyToFile(undergrad, grad);
+    }
+
+    public static void copyToFile(Student undergrad, Student grad) {
+        Properties properties = new Properties();
+        properties.setProperty("file.location", "C:/StudentRecords/"); // Set desired folder location
+
+        String folderLocation = properties.getProperty("file.location");
+        String fileName = folderLocation + "StudentDetails_241047004.txt";
+
+        try (FileWriter writer = new FileWriter(fileName)) {
+            writer.write("Undergrad Details:\n");
+            writer.write("Name: " + undergrad.name + ", ID: " + undergrad.ID + ", Grade: " + undergrad.grade +
+                    ", Age: " + undergrad.age + ", Address: " + undergrad.address + "\n");
+
+            writer.write("Grad Details:\n");
+            writer.write("Name: " + grad.name + ", ID: " + grad.ID + ", Grade: " + grad.grade +
+                    ", Age: " + grad.age + ", Address: " + grad.address + "\n");
+
+            System.out.println("Student details successfully written to " + fileName);
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+}
