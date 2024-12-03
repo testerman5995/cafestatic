@@ -1,0 +1,555 @@
+1.	Design a Bullet Proof Architecture for hosting a Café Static website for a Business case using AWS Services. 
+Note: Architectural Solution should record/document Content Distribution Globally across all region and provide solution for accessing site via domain name (No need of implementing this feature) 
+
+
+S3 BUCKET
+
+Launch AWS Academy Learner Lab>
+start lab>
+once light turns green, click it
+preference>
+click on show ......
+search s3>
+s3>
+create bucket>
+bucketname> msiscafe.com ////name should be unique globally
+block public> uncheck all and acknowledge
+////add tag> key -> name value -> msiscafe
+create>
+view details>
+///////s3 bucket is used to host static website, streaming website etc where there is no much user involvement
+clone git source code -----https://github.com/sreepathysois/cafe-static-website.git
+objects>
+add folder>add all the folder
+upload>
+bucket>
+click on link>
+properties>
+static website hosting> enable>host
+specify index
+save>
+bucket>
+objects>
+select all>
+actions>
+make public>--here acl is disabled, to enable that,
+bucket>
+permissions>
+object ownership>
+edit>
+enable acl>
+save>
+objects>
+select all>
+actions>
+enable mke public>
+properties>
+static website hosting>
+open url ---done
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+4.	Design a cloud virtual network in a region to host web servers and database servers in a highly available and fault-tolerant fashion. Also to address the need of making database layer private.
+
+
+-Host web servers on public subnet and unmanaged db servers on private subnet
+-you can try in sandbox
+-CFA: Module 5 Lab 2(its not exact solution, but you can practice using this lab)
+-Cloud architecting: Module 5 Challenge lab
+-Challenge (Cafe) lab: Creating a VPC Networking Environment for the Café
+-Challenge (Cafe) lab: Creating a Dynamic Website for the Café
+**you can use both labs to practice
+
+
+UNMANAGES DB 
+start lab>
+vpc>
+create vpc>
+vpc & more>
+name tag>
+cafestagevpc
+
+	10.0.0.0/16
+	first 3 digit ---n/w identifier
+	4th digit ---identify unique host within server
+	/16 ---subnet mask
+
+	10.0.0.0/16
+	32-16=16
+	2^16=65536
+	
+custom subnets cidr>
+public us-east-1a>
+10.0.0.0/24    ---------shouldnt be greater than main cidr ip
+
+	10.0.0.0/24
+	32-24=8
+	2^16=256
+
+public us-east-1b>
+10.0.2.0/24
+	
+	255.255.255.0 = /16
+	255.255.0.0 = /24
+
+private us-east-1a>	
+10.0.1.0/24
+private us-east-1b>
+10.0.3.0/24
+
+nat gateway> ----Choose the number of Availability Zones (AZs) in which to create NAT gateways. 
+1 az>
+VPC endpoint>
+None>
+
+view vpc>
+filer by vpc>
+select new>
+
+
+ec2>
+	we need to launch2 instances for public and pvt
+launch instance>
+name>
+webserver>
+ami>
+ubuntu>
+instance type>
+t2.micro>
+key pair>
+vockey>
+network settings>
+cafestagevpc>
+subnet>
+public subnet>
+	auto assign is disabled as it is our own vpc
+auto assign>
+enable>
+add new secutiry grp rule>
+http>
+source type>
+anywhere>
+launch instance>
+instances>
+launch instance>
+db_server
+ami>
+ubuntu 22.04>
+key pair>
+vockey>
+n/w settings>
+vpc>
+cafestagevpc>
+private>
+launch>
+
+
+terminal
+
+$ cd Downloads
+$ ls
+$ sudo rm -rf labsuser.pem -----------  we need to delete this as we are downloading again
+$ ls
+labuser.pem
+$ sudo chmod 600 labsuser.pem
+
+instance>
+cafe>
+select public ip addrss>
+
+$ sudo ssh -i labsuser.pem ubuntu@54.196.194.187
+$ sudo apt-get update
+$ sudo apt-get install apache2 libapache2-mod-php php php-mysql mysql-client
+$ sudo systemctl status apache2
+$ ls
+$ exit
+$ sudo scp -i labsuser.pem labsuser.pem ubuntu@54.196.194.187:/home/ubuntu/.
+$ sudo ssh -i labsuser.pem ubuntu@54.196.194.187
+$ ls
+$ sudo chmod 600 labsuser.pem
+
+//$ sudo ssh -i labsuser.pem ubuntu@54.196.194.187                                                                           
+$ sudo git clone https://github.com/sreepathysois/Cafe_Dynamic_Website.git
+$ cd  Cafe_Dynamic_Website
+$ ls
+$ sudo mkdir /var/www/html/cafeapp
+$ sudo cp -rf mompopcafe/* /var/www/html/cafeapp/.
+$ sudo nano /etc/apache2/sites-available/000-default.conf
+	DocumentRoot /var/www/html/cafeapp
+$ sudo systemctl restart apache2
+
+copy public web server ip >
+-----browser
+https:/<ip>
+
+$ cd ..
+$ ls
+$ ssh -i labsuser.pem ubuntu@10.0.2.117
+$ sudo apt-get update
+$ sudo apt-get install mysql-server mysql-client
+$ sudo git clone https://github.com/sreepathysois/Cafe_Dynamic_Website.git
+$ ls
+$ sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+	bind-address = 127.0.0.1
+	change the above>
+	bind-address = 0.0.0.0
+$ sudo systemctl restart mysql.service
+$ sudo  mysql -u root -p
+
+mysql> create database mom_pop_db;
+mysql> CREATE USER 'msis'@'%' IDENTIFIED WITH mysql_native_password BY 'Msois@123';  ----% means user can access by localhost or server
+mysql> ALTER USER 'msis'@'%' IDENTIFIED WITH mysql_native_password BY 'Msois@123';
+mysql> GRANT ALL PRIVILEGES ON mom_pop_db.* TO 'msis'@'%' WITH GRANT OPTION;
+mysql> exit;
+
+$ exit
+//we're back to web server
+//$ sudo mysql -u msis -h 10.0.1.88 -p
+
+webserver>
+copy security grp id>
+//we need to allow traffic
+db_server>
+security grp>
+edit inbound rule>
+add rule>
+type>
+mysql>
+source type>
+custom>
+source>
+paste the copied security grp>
+save rules>
+
+$ sudo mysql -u msis -h 10.0.1.88 -p
+
+mysql> show databases;
+mysql> use mom_pop_db;
+mysql> source Cafe_Dynamic_Website/mompopdb/create-db.sql;
+mysql> exit;
+
+$ cd /var/www/html/cafeapp
+$ ls
+$ sudo nano getAppParameters.php
+	db_url="10.0.1.219";
+	db_name="cafedb";
+	db_user="msis";
+$ sudo systemctl restart apache2
+
+----browser
+refresh
+
+end
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+5.	Design an architecture for hosting café dynamic website in a prod kind of environment using managed solutions for database in a particular region. 
+-Create database using RDS and connect it to web layer
+-you can try this in sandbox 
+-CFA: Module 8 Lab 5
+-Cloud architecting: Module 6 challenge lab
+-Challenge (Cafe) lab: Migrating a Database to Amazon RDS
+-Guided lab: Creating an Amazon RDS Database
+
+
+MANAGED DB INSTEAD OF PRIVATE DB SERVER
+aurora- aws 
+managed service--- rds
+
+vpc>
+create>
+name_tag>
+lab_vpc
+cidr>
+10.0.0.0/16
+az>
+2>
+custom az.
+10.0.0.0/24
+10.0.2.0/24
+10.0.1.0/24
+10.0.3.0/24
+nat gateway>
+in 1 az>
+vpc endpoint>
+none>
+ok>
+
+///////////////route -n  -----for route table path
+vpc>
+select>
+labvpc>
+select public route table>
+
+ec2>
+launch>
+name>
+web
+.
+.
+n/w setttings>
+vpc>
+labvpc
+subnet>
+public>
+auto assign>
+enable>
+add>
+type>
+http>
+source>
+anywhere>
+launch>
+
+instance>
+web>
+
+$ cd
+$ Downloads/
+$ sudo rm -rf labsuser.pem
+
+learner lab>
+aws details>
+download pem>
+
+$ sudo chmod 600 labsuser.pem
+$ sudo ssh -i labsuser.pem ubuntu@<ip>
+$ sudo apt-get update -y
+$ sudo apt-get install apache2 mysql-client -y
+
+
+rds>
+create db>
+std create>
+mysql>
+template> //imp
+free-tier> //imp
+settings>
+db instance>
+cafedb
+master user>
+admin
+p/w>
+Msios123
+db instance class>
+burstable>
+db.t3.micro>
+storage>
+connectivity>
+---connect to ec2 instance is to be done later
+pvt cloud vpc>
+labvpc>
+vpc security grp>
+create new>
+mydbsg
+tags>
+key>
+Name
+value>
+cafedb
+db authentication>
+p/w authentication>
+create>
+
+databases>
+cafedb>
+security>
+click on link>
+edit inbound rule>
+source type> 
+Mysql/aurora
+anywhere>
+save>
+
+rds>
+database>
+copy endpoint port>
+
+$ sudo mysql -u admin -h <paste domain name> -p
+mysql> create database mom_pop_db; //db name same as the db name in the .sql file in the mompopdb file
+mysql> GRANT ALL PRIVILEGES ON mom_pop_db.* TO 'admin'@'%' WITH GRANT OPTION;
+mysql> exit;
+
+$  sudo git clone https://github.com/sreepathysois/Cafe_Dynamic_Website.git //clone the repo
+$ cd to clone repo to mompopdb (create_db.sql)
+$ sudo mysql -u admin -h <paste  endpoint domain name> -p
+mysql> use mom_pop_db;
+mysql> source create-db.sql;
+mysql> exit;
+
+$ sudo mkdir /var/www/html/cafeapp
+$ cd ..
+$ sudo cp -rf mompopcafe/* /var/www/html/cafeapp
+$ cd /var/www/html/cafeapp
+$ sudo nano /etc/apache2/sites-available/000-default.conf
+DocumentRoot /var/www/html/cafeapp
+
+$ sudo systemctl restart apache2
+$ sudo nano getAppParameters.php
+change credentials
+db_url paste the rds endoint
+  $db_url = "cafedb1.chmg4ui0u8no.us-east-1.rds.amazonaws.com";
+  $db_name = "mom_pop_db";
+  $db_user = "admin";
+  $db_password = "Msois123";
+
+$ sudo systemctl restart apache2
+paste webserver ip of ec2 instance in browser
+
+======================================================================
+2.	Design an architecture for hosting Café dynamic website of particular using un-managed solutions for database in a particular region of AWS for setting dev or test environment.  
+
+- Standalone dynamic website using one single EC2 insatnce
+-you can try in sandbox
+-CFA: Module 6 lab 3 (its not exact solution, but you can practice using this lab)
+-Cloud architecting: Module 5 Challenge lab
+-Challenge (Cafe) lab: Creating a Dynamic Website for the Café
+
+
+Create VPC
+vpc>
+create>
+name_tag>
+lab_vpc
+cidr>
+10.0.0.0/16
+az>
+2>
+custom az.
+10.0.0.0/24
+10.0.2.0/24
+10.0.1.0/24
+10.0.3.0/24
+nat gateway>
+in 1 az>
+vpc endpoint>
+none>
+ok>
+
+
+Create EC2 instance 
+Name>
+cafe_webserver
+Instance type>
+Ubuntu
+Key pair>
+vockey
+Network settings>
+vpc>
+labvpc
+subnet>
+public>
+auto assign>
+enable>
+add>
+type>
+http>
+source>
+anywhere>
+launch>
+
+learner lab>
+aws details>
+download pem>
+$ sudo chmod 600 labsuser.pem
+$ sudo ssh -i labsuser.pem ubuntu@<public ip>
+$ sudo apt-get install apache2 libapache2-mod-php php php-mysql mysql-client
+$ sudo systemctl status apache2
+
+$ sudo git clone https://github.com/sreepathysois/Cafe_Dynamic_Website.git //Clone the repo
+$cd Cafe_Dynamic_Website
+$sudo mkdir /var/www/html/cafeapp
+$ sudo cp -rf mompopcafe/* /var/www/html/cafeapp
+$ cd /var/www/html/cafeapp
+$ sudo nano /etc/apache2/sites-available/000-default.conf
+DocumentRoot /var/www/html/cafeapp
+
+$ sudo systemctl restart apache2
+
+copy public web server ip >
+-----browser
+https:/<ip>
+
+$ sudo  mysql -u root -p
+
+mysql> create database mom_pop_db;
+mysql> CREATE USER 'msis'@'%' IDENTIFIED WITH mysql_native_password BY 'Msois@123';  ----% means user can access by localhost or server
+mysql> ALTER USER 'msis'@'%' IDENTIFIED WITH mysql_native_password BY 'Msois@123';
+mysql> GRANT ALL PRIVILEGES ON mom_pop_db.* TO 'msis'@'%' WITH GRANT OPTION;
+mysql> exit;
+
+$ exit
+
+$sudo mysql -u msis -p
+>show databases;
+>use mom_pop_db;
+>show tables;
+>source mom_pop_db/create-db.sql;
+>show tables;
+>exit;
+
+$ cd /var/www/html/cafeapp
+$ ls
+$ sudo nano getAppParameters.php
+	db_url="localhost";
+	db_name="mom_pop_db";
+	db_user="msis";
+$ sudo systemctl restart apache2
+
+copy public web server ip >
+-----browser
+https:/<ip>
+
+
+
+=========================================================================
+5.	Design an architecture for hosting café dynamic website in a prod kind of environment using managed solutions for database in a particular region. 
+-Create database using RDS and connect it to web layer
+-you can try this in sandbox 
+-CFA: Module 8 Lab 5
+-Cloud architecting: Module 6 challenge lab
+-Challenge (Cafe) lab: Migrating a Database to Amazon RDS
+-Guided lab: Creating an Amazon RDS Database
+
+=========================================================================
+6.	Design a solution to ensure the availability of café application due to any failures in availability zone or datacenter such that café clients should be diverted secondary sites in different region when primary website is down. 
+-fail-over routing policy using route53
+-Sandbox – 
+-CFA: -
+-Cloud architecting: Module 10 Guided lab
+-Guided lab: Creating a Highly Available Environment
+
+
+=========================================================================
+7.	Design a highly available, fault tolerant, scalable architecture for hosting the café dynamic website using AWS Global infrastructure such as to achieve availability and application should be able to scale based on-demand request of the customers. 
+-Implement the solution using load balancers and auto-scaling group
+-can be implemented in sandbox environment
+-CFA: Module 10 Lab 6
+-Cloud architecting: Module 10 challenge lab or capstone project
+-Lab - 6 Scale & Load Balance your Architecture-
+-Challenge (Café) lab: Creating a Scalable and Highly Available Environment for the Café
+-Capstone Project
+
+=========================================================================
+8.	Design a serverless solution to extract and send notification to café app owner about products sold on each day at 10 pm. 
+-implemented using Lambda
+-Sandbox –
+-CFA: Module 6 activity
+-Cloud architecting – Module 14 challenge lab
+-Challenge (Café) lab: Implementing a Serverless Architecture for the Café
+-Guided lab: Implementing a Serverless Architecture on AWS
+
+=========================================================================
+9.	Provide solution to migrate café application to micro services and design a solution to deploy micro services using AWS infrastructure and services. 
+-migrating to microservices from monolithic application
+-sandbox -
+-CFA:
+-Cloud architecting:  Module 14 guided lab(optional)
+-  (Optional) Guided lab: Breaking a Monolithic Node.js Application into Microservices
+=========================================================================
+11.	Automate the deployment of following infrastructure layers of business solution:
+
+a.	Network Layer – VPC, IGW, Subnet, Route table and Route table association to Subnet. 
+b.	Application Layer – Security Group, Instance on the VPC and Subnet created in Network Layer and Static website of Business. 
+c.	Replicate both Network and Application layer of Infrastructure with the same template in different region of AWS. 
+Challenge (Café) lab: Automating Infrastructure Deployment
+Guided lab: Automating Infrastructure with AWS CloudFormation
+=========================================================================
